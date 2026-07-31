@@ -26,7 +26,7 @@ export const Layout = ({ children }) => {
           <button className="mobile-menu-toggle" onClick={() => setIsSidebarOpen(true)}>
             <Menu size={24} />
           </button>
-          <span style={{ fontSize: 16, fontWeight: 700, marginLeft: 10 }}>ZLabs Portal</span>
+          <span style={{ fontSize: 16, fontWeight: 700, marginLeft: 10 }}>Z-Lab Portal</span>
         </div>
         
         {children}

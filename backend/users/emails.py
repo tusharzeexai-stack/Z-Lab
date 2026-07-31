@@ -54,7 +54,7 @@ ZLabs Team
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
-def send_task_assignment_email(intern_name, intern_email, task_title, task_description, deadline, mentor_name, login_url, custom_subject=None, custom_body=None):
+def send_task_assignment_email(intern_name, intern_email, task_title, task_description, deadline, mentor_name, login_url, custom_subject=None, custom_body=None, submission_url=None):
     subject = custom_subject or f'📋 New Task Assigned: {task_title}'
     
     if custom_body:
@@ -63,6 +63,8 @@ def send_task_assignment_email(intern_name, intern_email, task_title, task_descr
                             .replace('[[DEADLINE]]', deadline.strftime('%B %d, %Y %I:%M %p') if deadline else 'N/A') \
                             .replace('[[SENDER]]', mentor_name) \
                             .replace('[[LOGIN_URL]]', login_url)
+        if submission_url:
+            message = message.replace('[[SUBMISSION_URL]]', submission_url)
     else:
         message = f"""
 Dear {intern_name},
@@ -76,7 +78,7 @@ Description: {task_description}
 Deadline: {deadline.strftime('%B %d, %Y %I:%M %p') if deadline else 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━━
 
-You can view more details and submit your work through the ZLabs Portal:
+You can view more details and submit your work through the Z-Lab Portal:
 {login_url}
 
 Good luck!
@@ -156,3 +158,24 @@ ZLabs System
             pass
             
     email.send()
+
+
+def send_interview_email(name, email, role, interview_details):
+    subject = f'📅 Interview Invitation: {role.replace("_", " ").title()} Role at Z-Lab'
+    message = f"""Dear {name},
+
+Thank you for your application for the {role.replace("_", " ").title()} position at Z-Lab.
+
+We have reviewed your profile and would love to invite you for an interview!
+
+Interview Details:
+━━━━━━━━━━━━━━━━━━━━━━
+{interview_details}
+━━━━━━━━━━━━━━━━━━━━━━
+
+Please reply to this email to confirm your availability or if you have any questions.
+
+Best regards,
+Z-Lab Team
+"""
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])

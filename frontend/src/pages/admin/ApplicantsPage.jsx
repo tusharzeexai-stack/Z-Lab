@@ -24,10 +24,39 @@ export const ApplicantsPage = () => {
   const [search, setSearch] = useState('')
   const [rejectModal, setRejectModal] = useState(null)
   const [acceptModal, setAcceptModal] = useState(null)
+  const [interviewModal, setInterviewModal] = useState(null)
+  const [interviewDetails, setInterviewDetails] = useState('')
   const [mentors, setMentors] = useState([])
   const [selectedMentorId, setSelectedMentorId] = useState('')
   const [reason, setReason] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+
+  const handleOpenInterviewModal = (app) => {
+    setInterviewModal(app)
+    setInterviewDetails(
+      `Date & Time: \n` +
+      `Platform: Google Meet\n` +
+      `Meeting Link: https://meet.google.com/...\n` +
+      `Interviewer: `
+    )
+  }
+
+  const handleSendInterview = async () => {
+    if (!interviewDetails.trim()) {
+      toast.error('Please enter interview details.')
+      return
+    }
+    setActionLoading(true)
+    try {
+      await internshipApi.sendInterviewMail(interviewModal.id, interviewDetails)
+      toast.success('Interview email sent successfully!')
+      setInterviewModal(null)
+      setInterviewDetails('')
+      load()
+    } catch (e) {
+      toast.error(e.response?.data?.error || 'Failed to send interview invitation.')
+    } finally { setActionLoading(false) }
+  }
 
   const load = () => {
     setLoading(true)
@@ -40,7 +69,7 @@ export const ApplicantsPage = () => {
     authApi.mentors().then(r => setMentors(r.data.results || r.data))
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     load()
     loadMentors()
   }, [filter, roleFilter, search])
@@ -146,6 +175,9 @@ export const ApplicantsPage = () => {
                           <button className="btn btn-success btn-sm" onClick={() => setAcceptModal(app.id)} disabled={actionLoading}>
                             Accept
                           </button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => handleOpenInterviewModal(app)} disabled={actionLoading} style={{ color: 'var(--blue)' }}>
+                            Invite
+                          </button>
                           <button className="btn btn-danger btn-sm" onClick={() => setRejectModal(app.id)} disabled={actionLoading}>
                             Reject
                           </button>
@@ -183,12 +215,12 @@ export const ApplicantsPage = () => {
           <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
             Accept this application to create an intern profile. <strong>Note:</strong> A user account will be created immediately, and an email with login credentials will be sent to the intern.
           </p>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Assign Mentor (Optional)</label>
-            <select 
-              className="input" 
-              value={selectedMentorId} 
+            <select
+              className="input"
+              value={selectedMentorId}
               onChange={e => setSelectedMentorId(e.target.value)}
             >
               <option value="">No mentor assigned yet</option>

@@ -1,7 +1,10 @@
 # Dependencies
 node_modules/
-backend/__pycache__/
-backend/*/__pycache__/
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+backend/venv/
 
 # Environments
 .env
@@ -25,3 +28,4 @@ users/migrations/
 # OS
 .DS_Store
 Thumbs.db
+

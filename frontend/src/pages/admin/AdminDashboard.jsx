@@ -23,11 +23,14 @@ import {
   Clock,
   FileText,
   Trash2,
-  X
+  X,
+  Briefcase
 } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 
 export const AdminDashboard = () => {
   const navigate = useNavigate()
+  const { role } = useAuth()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [taskChart, setTaskChart] = useState([])
@@ -269,6 +272,9 @@ export const AdminDashboard = () => {
                   { label: 'Task Oversight', href: '/admin/tasks/interns', icon: <ClipboardCheck className="text-amber" />, desc: 'Monitor progress & feedback' },
                   { label: 'Project Pipeline', href: '/admin/projects', icon: <FolderKanban className="text-blue" />, desc: 'High-level project tracking' },
                   { label: 'Audit Logs', href: '/admin/logs', icon: <FileText className="text-secondary" />, desc: 'System activity & security logs' },
+                  ...(role === 'super_admin' ? [
+                    { label: 'Manage Job Openings', href: '/admin/positions', icon: <Briefcase className="text-pink" />, desc: 'Manage careers positions & details' }
+                  ] : []),
                 ].map(action => (
                   <div key={action.href} onClick={() => navigate(action.href)} className="card card-sm hover-lift" style={{ textDecoration: 'none', display: 'flex', gap: 16, alignItems: 'center', cursor: 'pointer' }}>
                     <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--bg-base)', border: '1px solid var(--border-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

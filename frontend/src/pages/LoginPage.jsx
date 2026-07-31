@@ -66,8 +66,8 @@ export const LoginPage = () => {
         {/* Left Side: Branding & Value Prop */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
-            <img src="/logo.png" alt="ZPortal" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-            <span style={{ fontSize: 20, fontWeight: 800, color: theme.navy, letterSpacing: '-0.03em' }}>ZPortal</span>
+            <img src="/logo.png" alt="Z-Lab" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <span style={{ fontSize: 20, fontWeight: 800, color: theme.navy, letterSpacing: '-0.03em' }}>Z-Lab</span>
           </div>
 
           <h1 style={{ fontSize: 36, fontWeight: 900, color: theme.navy, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.04em' }}>

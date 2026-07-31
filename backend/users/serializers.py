@@ -6,7 +6,7 @@ from .models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'role', 'phone', 'bio', 'skills', 'avatar', 'resume', 'location', 'is_direct_enroll', 'created_at']
+        fields = ['id', 'role', 'phone', 'bio', 'skills', 'avatar', 'resume', 'location', 'is_direct_enroll', 'temp_password', 'created_at']
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -90,8 +90,8 @@ export const CareersPage = () => {
       <header className={`lp-nav${scrolled ? ' lp-nav--solid' : ''}`} style={{ position: 'sticky' }}>
         <div className="lp-nav__inner">
           <a href="/" className="lp-logo">
-            <img src="/logo.png" alt="ZPortal" className="lp-logo__img" />
-            <span className="lp-logo__text">ZPortal</span>
+            <img src="/logo.png" alt="Z-Lab" className="lp-logo__img" />
+            <span className="lp-logo__text">Z-Lab</span>
           </a>
           <nav className={`lp-nav__links${menuOpen ? ' open' : ''}`}>
             <a href="/#how-it-works" onClick={() => setMenuOpen(false)}>How it Works</a>

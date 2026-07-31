@@ -68,6 +68,9 @@ export const authApi = {
 export const internshipApi = {
   // Public open positions
   positions: (params) => axios.get('/api/internships/positions/', { params }),
+  createPosition: (data) => api.post('/internships/positions/', data),
+  updatePosition: (id, data) => api.patch(`/internships/positions/${id}/`, data),
+  deletePosition: (id) => api.delete(`/internships/positions/${id}/`),
   // Application (public)
   apply: (formData) => api.post('/internships/apply/', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
@@ -82,6 +85,7 @@ export const internshipApi = {
   markReady: (id) => api.post(`/internships/interns/${id}/mark-ready/`),
   convert: (id, data) => api.post(`/internships/interns/${id}/convert/`, data),
   updateRound: (id, current_round) => api.patch(`/internships/interns/${id}/round/`, { current_round }),
+  sendInterviewMail: (id, details) => api.post(`/internships/applications/${id}/interview/`, { details }),
 }
 
 // ── Tasks ──────────────────────────────────────────────────────────────────────

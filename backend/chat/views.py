@@ -9,6 +9,7 @@ from django.utils import timezone
 import datetime
 from teams.models import Team
 from projects.models import Project
+from internships.models import InternProfile
 
 class ChatGroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ChatGroupSerializer
@@ -16,7 +17,32 @@ class ChatGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = ChatGroup.objects.select_related('team', 'project', 'project__team').prefetch_related(
+
+        # Auto-create direct chat groups for interns and their mentors/team leaders
+        if hasattr(user, 'profile'):
+            role = user.profile.role
+            if role == 'intern':
+                try:
+                    intern_profile = InternProfile.objects.get(user=user)
+                    if intern_profile.mentor:
+                        ChatGroup.objects.get_or_create(intern_user=user, staff_user=intern_profile.mentor)
+                    for membership in user.team_memberships.all().select_related('team', 'team__head'):
+                        if membership.team.head:
+                            ChatGroup.objects.get_or_create(intern_user=user, staff_user=membership.team.head)
+                except InternProfile.DoesNotExist:
+                    pass
+            elif role in ['mentor', 'team_head']:
+                if role == 'mentor':
+                    for intern_prof in InternProfile.objects.filter(mentor=user).select_related('user'):
+                        if intern_prof.user:
+                            ChatGroup.objects.get_or_create(intern_user=intern_prof.user, staff_user=user)
+                managed_teams = Team.objects.filter(head=user)
+                for team in managed_teams:
+                    for tm in team.memberships.all().select_related('user', 'user__profile'):
+                        if tm.user and hasattr(tm.user, 'profile') and tm.user.profile.role == 'intern':
+                            ChatGroup.objects.get_or_create(intern_user=tm.user, staff_user=user)
+
+        qs = ChatGroup.objects.select_related('team', 'project', 'project__team', 'intern_user', 'staff_user').prefetch_related(
             'team__head', 'team__memberships__user',
             'project__members', 'project__team__head', 'project__team__memberships__user'
         )
@@ -31,7 +57,9 @@ class ChatGroupViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(
                 Q(team_id__in=all_teams) | 
                 Q(project_id__in=user_projects) |
-                Q(project__team_id__in=all_teams)
+                Q(project__team_id__in=all_teams) |
+                Q(intern_user=user) |
+                Q(staff_user=user)
             )
 
         latest_msg = ChatMessage.objects.filter(group=OuterRef('pk')).order_by('-timestamp')

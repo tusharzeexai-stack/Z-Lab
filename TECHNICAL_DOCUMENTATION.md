@@ -1,4 +1,4 @@
-# ZLabs Portal — Comprehensive Technical Documentation
+# Z-Lab Portal — Comprehensive Technical Documentation
 
 > **Version:** 2.0 | **Last Updated:** April 2026 | **Environment:** IST (UTC+5:30)
 
@@ -23,7 +23,7 @@
 
 ## 1. Project Overview
 
-ZLabs Portal is a full-stack internal management platform build for Zeex Labs that manages the complete talent lifecycle from internship to permanent employment. It provides:
+Z-Lab Portal is a full-stack internal management platform build for Zeex Labs that manages the complete talent lifecycle from internship to permanent employment. It provides:
 
 - A **public-facing Careers page** for applicants to submit applications.
 - A **role-gated internal portal** for admins, team heads, mentors, and team members to manage operations.
@@ -712,7 +712,7 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER=<SES-SMTP-USER>
 EMAIL_HOST_PASSWORD=<SES-SMTP-PASSWORD>
-DEFAULT_FROM_EMAIL=ZLabs Portal <noreply@zlabs.com>
+DEFAULT_FROM_EMAIL=Z-Lab Portal <noreply@zlabs.com>
 ```
 
 #### Step 4 — Backend Server: ECS (Fargate) or EC2
@@ -846,7 +846,7 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER=<ses-username>
 EMAIL_HOST_PASSWORD=<ses-password>
-DEFAULT_FROM_EMAIL=ZLabs Portal <noreply@zlabs.com>
+DEFAULT_FROM_EMAIL=Z-Lab Portal <noreply@zlabs.com>
 
 # AWS S3
 AWS_ACCESS_KEY_ID=<key>
@@ -860,6 +860,6 @@ FRONTEND_URL=https://app.zlabs.com
 
 ---
 
-*Documentation prepared for ZLabs Portal v2.0*  
+*Documentation prepared for Z-Lab Portal v2.0*  
 *Architecture designed for secure, scalable AWS deployment*  
 *Contact the development team for clarifications on any section above.*

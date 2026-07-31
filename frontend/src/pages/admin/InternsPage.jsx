@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { internshipApi } from '../../api'
+import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowRight } from 'lucide-react'
 
@@ -26,9 +27,30 @@ export const InternsPage = () => {
     navigate(`${prefix}/interns/${id}`)
   }
 
+  const handlePromoteToTeamLeader = async (id) => {
+    try {
+      if (!window.confirm('Are you sure you want to promote this intern to a Team Leader?')) return
+      await internshipApi.convert(id, { role: 'team_head' })
+      toast.success('Intern promoted to Team Leader successfully!')
+      load()
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to promote intern')
+    }
+  }
+
   return (
     <Layout>
-      <TopBar title="Interns Directory" subtitle={`${interns.length} active interns registered`} />
+      <TopBar 
+        title="Interns Directory" 
+        subtitle={`${interns.length} active interns registered`} 
+        actions={
+          role !== 'intern' && (
+            <button onClick={() => navigate('/admin/enroll')} className="btn btn-primary btn-sm">
+              + Enroll Intern
+            </button>
+          )
+        }
+      />
       <div className="page slide-up">
         <div className="table-wrapper">
           <table className="interactive-table">
@@ -98,10 +120,21 @@ export const InternsPage = () => {
                         <StatusBadge status="in_progress" label="Ongoing" />
                       )}
                     </td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         <button className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => handleRowClick(intern.id)}>
                             View Profile <ArrowRight size={14} />
                         </button>
+                        {role === 'mentor' && !intern.converted_at && (
+                          <button 
+                            className="btn btn-primary btn-sm" 
+                            style={{ background: 'var(--green)', borderColor: 'var(--green)', fontSize: 11, padding: '4px 10px', height: 28 }}
+                            onClick={() => handlePromoteToTeamLeader(intern.id)}
+                          >
+                            Promote to Team Leader
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )
