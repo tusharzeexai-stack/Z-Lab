@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     ApplicationCreateView, ApplicationListView,
     ApplicationAcceptView, ApplicationRejectView,
+    ApplicationSendInterviewMailView,
     InternListView, InternDetailView,
     AssignMentorView, MarkReadyView, ConvertInternView, UpdateInternRoundView,
     OpenPositionListView, OpenPositionDetailView,
@@ -16,6 +17,7 @@ urlpatterns = [
     path('applications/', ApplicationListView.as_view(), name='application_list'),
     path('applications/<int:pk>/accept/', ApplicationAcceptView.as_view(), name='application_accept'),
     path('applications/<int:pk>/reject/', ApplicationRejectView.as_view(), name='application_reject'),
+    path('applications/<int:pk>/interview/', ApplicationSendInterviewMailView.as_view(), name='application_interview'),
     # Interns
     path('interns/', InternListView.as_view(), name='intern_list'),
     path('interns/<int:pk>/', InternDetailView.as_view(), name='intern_detail'),

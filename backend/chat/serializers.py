@@ -45,6 +45,16 @@ class ChatGroupSerializer(serializers.ModelSerializer):
             return obj.team.name
         if obj.project:
             return obj.project.name
+        if obj.intern_user and obj.staff_user:
+            request = self.context.get('request')
+            if request and request.user == obj.intern_user:
+                role_label = obj.staff_user.profile.role if hasattr(obj.staff_user, 'profile') else 'Staff'
+                if role_label == 'team_head':
+                    role_label = 'Team Leader'
+                elif role_label == 'mentor':
+                    role_label = 'Mentor'
+                return f"{obj.staff_user.get_full_name()} ({role_label})"
+            return f"{obj.intern_user.get_full_name()} (Intern)"
         return obj.name
 
     def get_type(self, obj):
@@ -52,6 +62,8 @@ class ChatGroupSerializer(serializers.ModelSerializer):
             return 'team'
         if obj.project:
             return 'project'
+        if obj.intern_user and obj.staff_user:
+            return 'direct'
         return 'custom'
 
     def get_reference_id(self, obj):
@@ -79,6 +91,10 @@ class ChatGroupSerializer(serializers.ModelSerializer):
                 users.add(member)
             if obj.project.team:
                 add_team_members(obj.project.team)
+
+        if obj.intern_user and obj.staff_user:
+            users.add(obj.intern_user)
+            users.add(obj.staff_user)
                 
         # Include super admins / admins conceptually? No, admins implicitly have access to all, but aren't strictly "in" the specific group unless we add them. Let's just list actual team/project members.
         

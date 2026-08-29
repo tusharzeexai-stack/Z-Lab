@@ -1,8 +1,8 @@
-# ZLabs Portal
+# Z-Lab Portal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**ZLabs Portal** is a professional, full-stack ecosystem designed to manage the entire lifecycle of interns and team members. From application tracking to automated employee conversion and project tasking, it provides a "World-Class" administrative architecture.
+**Z-Lab Portal** is a professional, full-stack ecosystem designed to manage the entire lifecycle of interns and team members. From application tracking to automated employee conversion and project tasking, it provides a "World-Class" administrative architecture.
 
 ---
 

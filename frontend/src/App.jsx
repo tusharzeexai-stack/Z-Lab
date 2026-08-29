@@ -20,6 +20,7 @@ import { MembersPage } from './pages/admin/MembersPage'
 import { MemberProfilePage } from './pages/admin/MemberProfilePage'
 import HierarchyPage from './pages/admin/HierarchyPage'
 import { EnrollPage } from './pages/admin/EnrollPage'
+import { PositionsPage } from './pages/admin/PositionsPage'
 
 // Shared
 import { TasksPage } from './pages/TasksPage'
@@ -79,8 +80,11 @@ function App() {
           {/* ── Admin ──────────────────────────────────────────────── */}
           <Route path="/admin" element={<Protected roles={['admin', 'super_admin']}><AdminDashboard /></Protected>} />
           <Route path="/admin/applicants" element={<Protected roles={['admin', 'super_admin']}><ApplicantsPage /></Protected>} />
+          <Route path="/admin/positions" element={<Protected roles={['super_admin']}><PositionsPage /></Protected>} />
           <Route path="/admin/interns" element={<Protected roles={['admin', 'super_admin']}><InternsPage /></Protected>} />
-          <Route path="/admin/members" element={<Protected roles={['admin', 'super_admin']}><MembersPage /></Protected>} />
+          <Route path="/admin/admins" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="admin" /></Protected>} />
+          <Route path="/admin/mentors" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="mentor" /></Protected>} />
+          <Route path="/admin/team-leaders" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="team_head" /></Protected>} />
           <Route path="/admin/members/:id" element={<Protected roles={['admin', 'super_admin']}><MemberProfilePage /></Protected>} />
           <Route path="/admin/interns/:id" element={<Protected roles={['admin', 'super_admin']}><InternProfilePage /></Protected>} />
           <Route path="/admin/teams" element={<Protected roles={['admin', 'super_admin']}><TeamsPage /></Protected>} />
@@ -90,12 +94,13 @@ function App() {
           <Route path="/admin/users" element={<Protected roles={['admin', 'super_admin']}><UsersPage /></Protected>} />
           <Route path="/admin/hierarchy" element={<Protected roles={['admin', 'super_admin']}><HierarchyPage /></Protected>} />
           <Route path="/admin/logs" element={<Protected roles={['admin', 'super_admin']}><ActivityLogsPage /></Protected>} />
-          <Route path="/admin/enroll" element={<Protected roles={['admin', 'super_admin']}><EnrollPage /></Protected>} />
+          <Route path="/admin/enroll" element={<Protected roles={['admin', 'super_admin', 'mentor', 'team_member', 'team_head']}><EnrollPage /></Protected>} />
 
           {/* ── Team Member / Mentor ───────────────────────────────── */}
           <Route path="/team" element={<Protected roles={['team_member', 'mentor']}><TeamMemberDashboard /></Protected>} />
           <Route path="/team/interns" element={<Protected roles={['team_member', 'mentor']}><InternsPage /></Protected>} />
           <Route path="/team/interns/:id" element={<Protected roles={['team_member', 'mentor']}><InternProfilePage /></Protected>} />
+          <Route path="/team/team-leaders" element={<Protected roles={['admin', 'super_admin', 'mentor', 'team_member', 'team_head']}><MembersPage defaultRole="team_head" /></Protected>} />
           <Route path="/team/tasks/interns" element={<Protected roles={['team_member', 'mentor']}><TasksPage role="team_member" taskType="intern" /></Protected>} />
           <Route path="/team/tasks/projects" element={<Protected roles={['team_member', 'mentor']}><TasksPage role="team_member" taskType="project" /></Protected>} />
           <Route path="/team/projects" element={<Protected roles={['team_member', 'mentor']}><ProjectsPage role="team_member" /></Protected>} />

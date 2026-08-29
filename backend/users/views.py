@@ -7,7 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from .models import UserProfile
 from .serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer
-from .permissions import IsAdminRole, IsAdminOrTeamHead
+from .permissions import IsAdminRole, IsAdminOrTeamHead, IsAdminOrMentor
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
@@ -51,7 +51,7 @@ class MeView(APIView):
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all().order_by('id')
-    permission_classes = [IsAdminOrTeamHead]
+    permission_classes = [IsAdminOrMentor]
     serializer_class = UserSerializer
 
     def get_queryset(self):
@@ -146,10 +146,27 @@ class AnalyticsView(APIView):
 
 
 class EnrollView(APIView):
-    permission_classes = [IsAdminRole]
+    permission_classes = [IsAdminOrMentor]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        creator_user = request.user
+        creator_role = creator_user.profile.role if hasattr(creator_user, 'profile') else 'intern'
+        
+        target_role = request.data.get('role', 'intern')
+        
+        # Rule validation
+        if creator_role == 'super_admin':
+            pass  # super_admin can create any account
+        elif creator_role == 'admin':
+            if target_role in ('super_admin', 'admin'):
+                return Response({"error": "Administrators cannot create other Admins or Super Admins."}, status=403)
+        elif creator_role in ('mentor', 'team_member', 'team_head'):
+            if target_role != 'intern':
+                return Response({"error": "Mentors/Team Members/Team Heads can only enroll Interns."}, status=403)
+        else:
+            return Response({"error": "You do not have permission to enroll members."}, status=403)
+
         email = request.data.get('email')
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
@@ -166,15 +183,28 @@ class EnrollView(APIView):
         if User.objects.filter(email=email).exists():
             return Response({"error": "User with this email already exists"}, status=400)
 
-        # Generate username from email/name
-        username = email.split('@')[0].replace('.', '')
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{counter}"
-            counter += 1
+        custom_username = request.data.get('username', '').strip()
+        custom_password = request.data.get('password', '').strip()
 
-        password = generate_password()
+        if custom_username:
+            if User.objects.filter(username=custom_username).exists():
+                return Response({"error": f"Username '{custom_username}' is already taken."}, status=400)
+            username = custom_username
+        else:
+            # Generate username from email/name
+            username = email.split('@')[0].replace('.', '')
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+
+        if custom_password:
+            if len(custom_password) < 6:
+                return Response({"error": "Password must be at least 6 characters long."}, status=400)
+            password = custom_password
+        else:
+            password = generate_password()
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -190,7 +220,8 @@ class EnrollView(APIView):
             resume=resume,
             bio=bio,
             skills=skills,
-            is_direct_enroll=True
+            is_direct_enroll=True,
+            temp_password=password
         )
 
         # If it's an intern, also create an InternProfile so they appear in Interns Directory
@@ -225,7 +256,7 @@ class EnrollView(APIView):
         })
 
 class EnrollScanView(APIView):
-    permission_classes = [IsAdminRole]
+    permission_classes = [IsAdminOrMentor]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):

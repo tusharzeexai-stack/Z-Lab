@@ -12,7 +12,7 @@ from .models import Application, InternProfile, OpenPosition
 from .serializers import ApplicationSerializer, InternProfileSerializer, OpenPositionSerializer
 from users.models import UserProfile
 from users.permissions import IsAdminRole, IsAdminOrMentor
-from users.emails import send_intern_welcome_email, send_conversion_email
+from users.emails import send_intern_welcome_email, send_conversion_email, send_interview_email
 from activity_logs.utils import log_activity
 
 
@@ -129,7 +129,7 @@ class ApplicationAcceptView(APIView):
         user.set_password(password)
         user.save()
         
-        UserProfile.objects.create(user=user, role='intern', phone=application.phone)
+        UserProfile.objects.create(user=user, role='intern', phone=application.phone, temp_password=password)
 
         # 4. Create intern profile linked to user
         intern_profile = InternProfile.objects.create(
@@ -188,6 +188,42 @@ class ApplicationRejectView(APIView):
         )
 
         return Response({'message': 'Application rejected.'})
+
+
+class ApplicationSendInterviewMailView(APIView):
+    permission_classes = [IsAdminRole]
+
+    def post(self, request, pk):
+        try:
+            application = Application.objects.get(pk=pk)
+        except Application.DoesNotExist:
+            return Response({'error': 'Application not found.'}, status=404)
+
+        interview_details = request.data.get('details', '')
+        if not interview_details:
+            return Response({'error': 'Interview details are required.'}, status=400)
+
+        try:
+            send_interview_email(
+                name=application.name,
+                email=application.email,
+                role=application.role_applied_for,
+                interview_details=interview_details
+            )
+            email_sent = True
+        except Exception as e:
+            return Response({'error': f'Failed to send email: {str(e)}'}, status=500)
+
+        log_activity(
+            user=request.user,
+            action_type='feedback_given',
+            description=f'Sent interview invitation to {application.name} ({application.email}).',
+        )
+
+        return Response({
+            'message': 'Interview invitation email sent successfully.',
+            'email_sent': email_sent
+        })
 
 
 class InternListView(generics.ListAPIView):
@@ -288,7 +324,8 @@ class ConvertInternView(APIView):
             return Response({'error': 'Intern not found.'}, status=404)
 
         if not intern.is_ready_for_team:
-            return Response({'error': 'Intern is not yet marked as ready for team.'}, status=400)
+            intern.is_ready_for_team = True
+            intern.save()
 
         target_role = request.data.get('role', 'team_member')
         if target_role not in ('team_member', 'team_head'):

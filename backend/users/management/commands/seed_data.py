@@ -25,8 +25,8 @@ class Command(BaseCommand):
         admin_user.is_staff = True
         admin_user.is_superuser = True
         admin_user.save()
-        UserProfile.objects.update_or_create(user=admin_user, defaults={'role': 'admin'})
-        self.stdout.write('  [OK] Admin: admin / admin@123')
+        UserProfile.objects.update_or_create(user=admin_user, defaults={'role': 'super_admin', 'temp_password': 'admin@123'})
+        self.stdout.write('  [OK] Super Admin: admin / admin@123')
 
         # ── Mentors ────────────────────────────────────────────────────────
         mentor1, _ = User.objects.get_or_create(username='mentor_sara')
@@ -35,7 +35,7 @@ class Command(BaseCommand):
         mentor1.first_name = 'Sara'
         mentor1.last_name = 'Khan'
         mentor1.save()
-        UserProfile.objects.update_or_create(user=mentor1, defaults={'role': 'mentor', 'phone': '9876543210'})
+        UserProfile.objects.update_or_create(user=mentor1, defaults={'role': 'mentor', 'phone': '9876543210', 'temp_password': 'mentor@123'})
 
         mentor2, _ = User.objects.get_or_create(username='mentor_raj')
         mentor2.set_password('mentor@123')
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         mentor2.first_name = 'Raj'
         mentor2.last_name = 'Patel'
         mentor2.save()
-        UserProfile.objects.update_or_create(user=mentor2, defaults={'role': 'mentor', 'phone': '9876543211'})
+        UserProfile.objects.update_or_create(user=mentor2, defaults={'role': 'mentor', 'phone': '9876543211', 'temp_password': 'mentor@123'})
         self.stdout.write('  [OK] Mentors: mentor_sara, mentor_raj / mentor@123')
 
         # ── Teams ──────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ class Command(BaseCommand):
         th.first_name = 'Ali'
         th.last_name = 'Hassan'
         th.save()
-        UserProfile.objects.update_or_create(user=th, defaults={'role': 'team_head'})
+        UserProfile.objects.update_or_create(user=th, defaults={'role': 'team_head', 'temp_password': 'teamhead@123'})
         team_dev.head = th
         team_dev.save()
         TeamMembership.objects.get_or_create(user=th, team=team_dev)
@@ -66,14 +66,14 @@ class Command(BaseCommand):
 
         # ── Projects ───────────────────────────────────────────────────────
         proj1, _ = Project.objects.get_or_create(
-            name='ZLabs Portal v2',
+            name='Z-Lab Portal v2',
             defaults={'description': 'Internship management portal rebuild', 'team': team_dev, 'status': 'active', 'created_by': admin_user}
         )
         proj2, _ = Project.objects.get_or_create(
             name='Brand Identity 2025',
             defaults={'description': 'New company brand design', 'team': team_design, 'status': 'planning', 'created_by': admin_user}
         )
-        self.stdout.write('  [OK] Projects: ZLabs Portal v2, Brand Identity 2025')
+        self.stdout.write('  [OK] Projects: Z-Lab Portal v2, Brand Identity 2025')
 
         # ── Interns ────────────────────────────────────────────────────────
         interns_data = [
@@ -90,7 +90,7 @@ class Command(BaseCommand):
             u.first_name = first
             u.last_name = last
             u.save()
-            UserProfile.objects.update_or_create(user=u, defaults={'role': 'intern'})
+            UserProfile.objects.update_or_create(user=u, defaults={'role': 'intern', 'temp_password': 'intern@123'})
             InternProfile.objects.get_or_create(user=u, defaults={'mentor': mentor})
             intern_users.append(u)
 
@@ -103,7 +103,7 @@ class Command(BaseCommand):
         tm.first_name = 'Alex'
         tm.last_name = 'Brown'
         tm.save()
-        UserProfile.objects.update_or_create(user=tm, defaults={'role': 'team_member'})
+        UserProfile.objects.update_or_create(user=tm, defaults={'role': 'team_member', 'temp_password': 'member@123'})
         TeamMembership.objects.get_or_create(user=tm, team=team_dev)
         self.stdout.write('  [OK] Team Member: member_alex / member@123')
 
@@ -194,6 +194,46 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write('  [OK] Tasks: 5 tasks with various statuses')
+
+        # ── Open Positions ──────────────────────────────────────────────────
+        from internships.models import OpenPosition
+        positions_data = [
+            {
+                'role': 'dev_intern',
+                'title': 'Software Development Intern',
+                'description': 'Work with React, Django and Python to build scalable internal applications.',
+                'requirements': 'Basic understanding of HTML, CSS, JavaScript and Python. Familiarity with Django or React is a plus.',
+                'duration': '3 months',
+                'is_open': True
+            },
+            {
+                'role': 'design_intern',
+                'title': 'UI/UX Design Intern',
+                'description': 'Design modern user interfaces and user experiences using Figma and custom CSS systems.',
+                'requirements': 'Familiarity with Figma, styling sheets (CSS) and wireframing.',
+                'duration': '3 months',
+                'is_open': True
+            },
+            {
+                'role': 'aiml_intern',
+                'title': 'AI/ML Intern',
+                'description': 'Develop, deploy and test deep learning models for classification and inference.',
+                'requirements': 'Proficient in Python, PyTorch/TensorFlow and basic statistics.',
+                'duration': '6 months',
+                'is_open': True
+            },
+            {
+                'role': 'data_intern',
+                'title': 'Data Analyst Intern',
+                'description': 'Analyze application telemetry and system analytics to forecast risk and predict compliance.',
+                'requirements': 'Knowledge of SQL, Python (Pandas/NumPy) and data visualization tools.',
+                'duration': '3 months',
+                'is_open': True
+            }
+        ]
+        for p_data in positions_data:
+            OpenPosition.objects.get_or_create(role=p_data['role'], defaults=p_data)
+        self.stdout.write('  [OK] Open Positions: Dev, Design, AI/ML, Data Analyst')
 
         self.stdout.write(self.style.SUCCESS(
             '\n[DONE] Seed data loaded successfully!\n'

@@ -9,6 +9,8 @@ class ChatGroup(models.Model):
     name = models.CharField(max_length=255, blank=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='chat_groups')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True, related_name='chat_groups')
+    intern_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='intern_direct_chats')
+    staff_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='staff_direct_chats')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

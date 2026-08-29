@@ -13,15 +13,19 @@ import {
   User,
   Network,
   LogOut,
-  MessageSquare
+  MessageSquare,
+  Briefcase
 } from 'lucide-react'
 
 const NAV = {
   admin: [
     { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { to: '/admin/applicants', label: 'Applicants', icon: <UserPlus size={18} /> },
+    { to: '/admin/enroll', label: 'Enroll Member', icon: <UserPlus size={18} /> },
     { to: '/admin/interns', label: 'Interns', icon: <GraduationCap size={18} /> },
-    { to: '/admin/members', label: 'Members', icon: <Users size={18} /> },
+    { to: '/admin/admins', label: 'Admins', icon: <User size={18} /> },
+    { to: '/admin/mentors', label: 'Mentors', icon: <User size={18} /> },
+    { to: '/admin/team-leaders', label: 'Team Leaders', icon: <User size={18} /> },
     { to: '/admin/teams', label: 'Teams', icon: <Users size={18} /> },
     { to: '/admin/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
     { to: '/admin/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
@@ -34,6 +38,8 @@ const NAV = {
   team_member: [
     { to: '/team', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { to: '/team/interns', label: 'My Interns', icon: <GraduationCap size={18} /> },
+    { to: '/team/team-leaders', label: 'Team Leaders', icon: <User size={18} /> },
+    { to: '/admin/enroll', label: 'Enroll Intern', icon: <UserPlus size={18} /> },
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
@@ -43,6 +49,8 @@ const NAV = {
   mentor: [
     { to: '/team', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { to: '/team/interns', label: 'My Interns', icon: <GraduationCap size={18} /> },
+    { to: '/team/team-leaders', label: 'Team Leaders', icon: <User size={18} /> },
+    { to: '/admin/enroll', label: 'Enroll Intern', icon: <UserPlus size={18} /> },
     { to: '/team/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
@@ -53,6 +61,8 @@ const NAV = {
     { to: '/team-head', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { to: '/team-head/members', label: 'Team Members', icon: <Users size={18} /> },
     { to: '/team-head/interns', label: 'My Interns', icon: <GraduationCap size={18} /> },
+    { to: '/team/team-leaders', label: 'Team Leaders', icon: <User size={18} /> },
+    { to: '/admin/enroll', label: 'Enroll Intern', icon: <UserPlus size={18} /> },
     { to: '/team-head/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
     { to: '/team-head/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
     { to: '/team-head/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
@@ -61,10 +71,28 @@ const NAV = {
   ],
   intern: [
     { to: '/intern-portal', label: 'Intern Portal', icon: <LayoutDashboard size={18} /> },
+    { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
 }
-NAV.super_admin = NAV.admin
+NAV.super_admin = [
+  { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+  { to: '/admin/applicants', label: 'Applicants', icon: <UserPlus size={18} /> },
+  { to: '/admin/enroll', label: 'Enroll Member', icon: <UserPlus size={18} /> },
+  { to: '/admin/positions', label: 'Job Openings', icon: <Briefcase size={18} /> },
+  { to: '/admin/interns', label: 'Interns', icon: <GraduationCap size={18} /> },
+  { to: '/admin/admins', label: 'Admins', icon: <User size={18} /> },
+  { to: '/admin/mentors', label: 'Mentors', icon: <User size={18} /> },
+  { to: '/admin/team-leaders', label: 'Team Leaders', icon: <User size={18} /> },
+  { to: '/admin/teams', label: 'Teams', icon: <Users size={18} /> },
+  { to: '/admin/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
+  { to: '/admin/tasks/interns', label: 'Intern Tasks', icon: <CheckSquare size={18} /> },
+  { to: '/admin/tasks/projects', label: 'Project Tasks', icon: <Hammer size={18} /> },
+  { to: '/admin/hierarchy', label: 'Hierarchy', icon: <Network size={18} /> },
+  { to: '/admin/users', label: 'Settings', icon: <User size={18} /> },
+  { to: '/chat', label: 'Team Chat', icon: <MessageSquare size={18} /> },
+  { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
+]
 
 const ROLE_LABELS = {
   super_admin: 'Super Admin',
@@ -77,7 +105,9 @@ const ROLE_LABELS = {
 
 import { toast } from './Toast'
 
-export const Sidebar = () => {
+import { Menu, X } from 'lucide-react'
+
+export const Sidebar = ({ isOpen, onClose }) => {
   const { user, role, logout } = useAuth()
   const links = NAV[role] || []
   const [totalUnread, setTotalUnread] = useState(0)
@@ -111,12 +141,16 @@ export const Sidebar = () => {
     : user?.username?.[0]?.toUpperCase() || 'U'
 
   return (
-    <div className="sidebar">
-      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)' }}>
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>ZLabs Portal</span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Z-Lab Portal</span>
         </div>
+        {/* Close button for mobile */}
+        <button className="mobile-sidebar-close" onClick={onClose} style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+          <X size={20} />
+        </button>
       </div>
 
       <div style={{ padding: '16px 16px 12px', borderBottom: '1px solid var(--border-sub)' }}>

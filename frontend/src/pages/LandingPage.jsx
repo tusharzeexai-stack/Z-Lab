@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   ArrowRight, ChevronRight, CheckCircle, Star, Shield, Zap, BarChart, Users, Clock, Award, Target, RefreshCw, Menu, X,
-  Eye, UserCheck, Layers, TrendingUp, Globe, Camera, Phone, Mail, MapPin
+  Eye, UserCheck, Layers, TrendingUp, Globe, Camera, Phone, Mail, MapPin, Upload, Briefcase, Terminal, Code, Palette, Rocket, FileText
 } from 'lucide-react'
 import './LandingPage.css'
+import { internshipApi } from '../api'
+import { toast, ToastContainer } from '../components/Toast'
+import { Modal } from '../components/Modal'
 
 const useInView = (threshold = 0.15) => {
   const ref = useRef(null)
@@ -53,16 +56,76 @@ const features = [
 ]
 
 const testimonials = [
-  { quote: 'ZPortal turned our internship program from a chaotic spreadsheet into a professional talent pipeline. The conversion rate is up 40% in one quarter.', name: 'Priya Mehta', title: 'Head of People, ZLabs', rating: 5 },
+  { quote: 'Z-Lab turned our internship program from a chaotic spreadsheet into a professional talent pipeline. The conversion rate is up 40% in one quarter.', name: 'Priya Mehta', title: 'Head of People, Z-Lab', rating: 5 },
   { quote: 'As an intern, I always knew exactly where I stood. The dashboard made the whole process feel fair and transparent. I got converted to full-time after 3 months.', name: 'Aryan Kapoor', title: 'Software Engineer (ex-Intern)', rating: 5 },
   { quote: 'The matching system placed me in a team perfectly aligned with my skills. The mentorship structure is exceptional — structured but not rigid.', name: 'Sara Hussain', title: 'Design Lead (ex-Intern)', rating: 5 },
 ]
+
+const ROLE_ICONS = {
+  aiml_intern: Terminal,
+  bde_intern: Briefcase,
+  dev_intern: Code,
+  design_intern: Palette,
+  marketing_intern: Rocket,
+  data_intern: BarChart,
+  content_intern: FileText,
+  hr_intern: Users,
+}
 
 export const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const [heroRef, heroVisible] = useInView(0.05)
+
+  const [positions, setPositions] = useState([])
+  const [posLoading, setPosLoading] = useState(true)
+  const [selectedRole, setSelectedRole] = useState(null)
+  const [applyModalOpen, setApplyModalOpen] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', phone: '', skills: '', cover_letter: '' })
+  const [resume, setResume] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const fileRef = useRef()
+
+  useEffect(() => {
+    internshipApi.positions({ open: 'true' })
+      .then(r => setPositions(r.data.results || r.data))
+      .catch(() => {})
+      .finally(() => setPosLoading(false))
+  }, [])
+
+  const handleApplyClick = (pos) => {
+    setSelectedRole(pos)
+    setSubmitted(false)
+    setForm({ name: '', email: '', phone: '', skills: '', cover_letter: '' })
+    setResume(null)
+    setApplyModalOpen(true)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!resume) { toast.error('Please upload your resume (PDF)'); return }
+    setSubmitting(true)
+    const fd = new FormData()
+    Object.entries(form).forEach(([k, v]) => fd.append(k, v))
+    fd.append('resume', resume)
+    fd.append('role_applied_for', selectedRole?.role || 'dev_intern')
+    try {
+      await internshipApi.apply(fd)
+      setSubmitted(true)
+      toast.success('Application submitted successfully!')
+    } catch (err) {
+      const errors = err.response?.data
+      if (typeof errors === 'object') {
+        Object.values(errors).forEach(e => toast.error(Array.isArray(e) ? e[0] : e))
+      } else {
+        toast.error('Submission failed.')
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   // Fixed hook calls — must never be in loops or conditionals (Rules of Hooks)
   const fRef0 = useInView(); const fRef1 = useInView(); const fRef2 = useInView()
@@ -79,11 +142,11 @@ export const LandingPage = () => {
   // Data (not hooks — safe to define anywhere)
   const benefitItems = [
     { icon: Eye,        title: 'Full Transparency, Always',          body: 'No ghosting. No ambiguity. Your application status, performance score, and next steps are always visible on your personal dashboard.' },
-    { icon: UserCheck,  title: 'A Mentor Committed to You',           body: 'Every intern is paired with a senior ZLabs professional. Weekly 1-on-1 sessions keep your growth structured and consistent.' },
+    { icon: UserCheck,  title: 'A Mentor Committed to You',           body: 'Every intern is paired with a senior Z-Lab professional. Weekly 1-on-1 sessions keep your growth structured and consistent.' },
     { icon: Layers,     title: 'Real Work. Production Impact.',       body: 'From week one you own deliverables that ship to live products. No busywork — every task is tied to a real business outcome.' },
-    { icon: Award,      title: 'Certified Professional Credentials',  body: 'Complete each phase and earn an officially verified ZLabs credential that is recognised inside and outside the organisation.' },
+    { icon: Award,      title: 'Certified Professional Credentials',  body: 'Complete each phase and earn an officially verified Z-Lab credential that is recognised inside and outside the organisation.' },
     { icon: TrendingUp, title: 'A Clear Path to Full-Time',           body: 'Top performers receive direct conversion offers backed by internship data. No re-interview loop — your track record speaks for itself.' },
-    { icon: Globe,      title: 'Access to an Elite Network',          body: 'Join the ZLabs alumni ecosystem — engineers, designers, and leaders who continue to build and collaborate long after conversion.' },
+    { icon: Globe,      title: 'Access to an Elite Network',          body: 'Join the Z-Lab alumni ecosystem — engineers, designers, and leaders who continue to build and collaborate long after conversion.' },
   ]
 
   useEffect(() => {
@@ -99,22 +162,23 @@ export const LandingPage = () => {
 
   return (
     <div className="lp">
+      <ToastContainer />
       {/* ────────── NAV ────────── */}
       <header className={`lp-nav${scrolled ? ' lp-nav--solid' : ''}`}>
         <div className="lp-nav__inner">
           <a href="/" className="lp-logo">
-            <img src="/logo.png" alt="ZPortal" className="lp-logo__img" />
-            <span className="lp-logo__text">ZPortal</span>
+            <img src="/logo.png" alt="Z-Lab" className="lp-logo__img" />
+            <span className="lp-logo__text">Z-Lab</span>
           </a>
           <nav className={`lp-nav__links${menuOpen ? ' open' : ''}`}>
             <a href="/#how-it-works" onClick={() => setMenuOpen(false)}>How it Works</a>
             <a href="/#benefits" onClick={() => setMenuOpen(false)}>Benefits</a>
-            <a href="/careers" onClick={() => setMenuOpen(false)}>Careers</a>
+            <a href="/#positions" onClick={() => setMenuOpen(false)}>Careers</a>
             <a href="/#testimonials" onClick={() => setMenuOpen(false)}>Stories</a>
+            <a href="/login" onClick={() => setMenuOpen(false)}>Sign In</a>
           </nav>
           <div className="lp-nav__actions">
-            <a href="/login" className="lp-btn lp-btn--ghost">Sign In</a>
-            <a href="/careers" className="lp-btn lp-btn--dark">View Openings</a>
+            <a href="/#positions" className="lp-btn lp-btn--dark">View Openings</a>
           </div>
           <button className="lp-nav__burger" onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -134,10 +198,10 @@ export const LandingPage = () => {
             to <em>Full-Time Member.</em>
           </h1>
           <p className="lp-hero__p">
-            ZPortal is the complete career management ecosystem for ZLabs. Apply, grow as an intern, and convert to a permanent role — all through one transparent, data-driven platform.
+            Z-Lab is the complete career management ecosystem. Apply, grow as an intern, and convert to a permanent role — all through one transparent, data-driven platform.
           </p>
           <div className="lp-hero__cta">
-            <a href="/careers" className="lp-btn lp-btn--primary">
+            <a href="/#positions" className="lp-btn lp-btn--primary">
               Explore Open Roles <ArrowRight size={18} />
             </a>
             <a href="/#how-it-works" className="lp-btn lp-btn--subtle">
@@ -150,7 +214,7 @@ export const LandingPage = () => {
                 <div key={i} className="lp-avatar" style={{ background: c, zIndex: 10 - i }} />
               ))}
             </div>
-            <span>Trusted by <strong>500+</strong> professionals across ZLabs</span>
+            <span>Trusted by <strong>500+</strong> professionals across Z-Lab</span>
           </div>
         </div>
         <div className={`lp-hero__visual${heroVisible ? ' visible' : ''}`}>
@@ -249,7 +313,7 @@ export const LandingPage = () => {
           <div className="lp-section-head">
             <span className="lp-label">The Three-Phase Journey</span>
             <h2>Every step, handled with precision.</h2>
-            <p>ZPortal manages the complete arc of your professional transition — from the first submission to your first day as a permanent employee.</p>
+            <p>Z-Lab manages the complete arc of your professional transition — from the first submission to your first day as a permanent employee.</p>
           </div>
 
           <div className="lp-steps__tabs">
@@ -306,9 +370,9 @@ export const LandingPage = () => {
       <section id="benefits" className="lp-benefits">
         <div className="lp-container">
           <div className="lp-section-head lp-section-head--light">
-            <span className="lp-label lp-label--light">Why Join ZPortal?</span>
+            <span className="lp-label lp-label--light">Why Join Z-Lab?</span>
             <h2>Built around your growth.</h2>
-            <p>ZPortal is a structured launchpad — not just a job board. Here is exactly what you gain from the moment you apply.</p>
+            <p>Z-Lab is a structured launchpad — not just a job board. Here is exactly what you gain from the moment you apply.</p>
           </div>
           <div className="lp-benefits__grid">
             {benefitItems.map((b, i) => {
@@ -328,10 +392,72 @@ export const LandingPage = () => {
             })}
           </div>
           <div className="lp-benefits__cta">
-            <a href="/careers" className="lp-btn lp-btn--primary">
+            <a href="/#positions" className="lp-btn lp-btn--primary">
               Explore Open Roles <ArrowRight size={18} />
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* ────────── OPEN POSITIONS ────────── */}
+      <section id="positions" className="lp-positions">
+        <div className="lp-container">
+          <div className="lp-positions__header">
+            <div className="lp-positions__title-area">
+              <span className="lp-label">Opportunities</span>
+              <h2>Open Positions</h2>
+            </div>
+            <div className="lp-positions__count">
+              Showing {positions.length} active {positions.length === 1 ? 'role' : 'roles'}
+            </div>
+          </div>
+
+          {posLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--slate)' }}>
+              <div style={{ width: 30, height: 30, border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>Loading active positions...</span>
+            </div>
+          ) : positions.length > 0 ? (
+            <div className="lp-positions__grid">
+              {positions.map((pos, i) => {
+                const Icon = ROLE_ICONS[pos.role] || Briefcase
+                return (
+                  <div 
+                    key={i} 
+                    className="lp-pos-card"
+                    onClick={() => handleApplyClick(pos)}
+                  >
+                    <div>
+                      <div className="lp-pos-card__header">
+                        <div className="lp-pos-card__icon-box">
+                          <Icon size={18} />
+                        </div>
+                        <span className="lp-pos-card__tag">Technology</span>
+                      </div>
+                      <h3 className="lp-pos-card__title">{pos.title}</h3>
+                      <div className="lp-pos-card__meta">
+                        <div className="lp-pos-card__meta-item">
+                          <MapPin size={14} />
+                          <span>Remote / Hybrid</span>
+                        </div>
+                        <div className="lp-pos-card__meta-item">
+                          <Clock size={14} />
+                          <span>Full-time</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="lp-pos-card__footer">
+                      Apply to Role <ChevronRight size={16} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '60px 40px', background: 'var(--bg-soft)', borderRadius: 24, border: `1px solid var(--border)` }}>
+              <p style={{ color: 'var(--slate)', fontSize: 15 }}>No open positions currently available. Please check back later!</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -339,7 +465,7 @@ export const LandingPage = () => {
       <section id="testimonials" className="lp-testi">
         <div className="lp-container">
           <div className="lp-section-head">
-            <span className="lp-label">Voices from ZLabs</span>
+            <span className="lp-label">Voices from Z-Lab</span>
             <h2>Real results. Real people.</h2>
           </div>
           <div className="lp-testi__grid">
@@ -372,10 +498,10 @@ export const LandingPage = () => {
             <img src="/logo.png" alt="Logo" className="lp-cta__logo" />
             <h2>Your next chapter starts here.</h2>
             <p>
-              Whether you are a student looking for a structured launch, or a professional evaluating your next opportunity — ZPortal gives you the clearest path forward.
+              Whether you are a student looking for a structured launch, or a professional evaluating your next opportunity — Z-Lab gives you the clearest path forward.
             </p>
             <div className="lp-cta__actions">
-              <a href="/careers" className="lp-btn lp-btn--primary">
+              <a href="/#positions" className="lp-btn lp-btn--primary">
                 Browse Open Roles <ArrowRight size={18} />
               </a>
               <a href="/login" className="lp-btn lp-btn--light">
@@ -413,7 +539,7 @@ export const LandingPage = () => {
                 <li><a href="/#how-it-works">How it Works</a></li>
                 <li><a href="/#benefits">Benefits</a></li>
                 <li><a href="/#testimonials">Stories</a></li>
-                <li><a href="/careers">Careers</a></li>
+                <li><a href="/#positions">Careers</a></li>
                 <li><a href="/login">Staff Portal</a></li>
               </ul>
             </div>
@@ -447,6 +573,69 @@ export const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* ────────── APPLICATION MODAL ────────── */}
+      <Modal 
+        open={applyModalOpen} 
+        onClose={() => setApplyModalOpen(false)} 
+        title={selectedRole ? `Apply for ${selectedRole.title}` : 'Apply for Role'}
+        size="lg"
+      >
+        {submitted ? (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ width: 56, height: 56, background: '#dcfce7', color: '#15803d', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <CheckCircle size={28} />
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, color: 'var(--navy)' }}>Application Sent!</h3>
+            <p style={{ color: 'var(--slate)', fontSize: 14, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
+              Thank you for applying to Z-Lab. Our team will review your profile and contact you soon.
+            </p>
+            <button className="lp-btn lp-btn--dark" onClick={() => setApplyModalOpen(false)}>Done</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div>
+                <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Full Name</label>
+                <input className="input" placeholder="e.g. Jane Doe" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
+              </div>
+              <div>
+                <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Email Address</label>
+                <input className="input" type="email" placeholder="e.g. jane@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
+              </div>
+            </div>
+            <div>
+              <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Phone Number</label>
+              <input className="input" type="tel" placeholder="e.g. +91 9876543210" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} required />
+            </div>
+            <div>
+              <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Core Skills</label>
+              <input className="input" placeholder="e.g. React, Node.js, Python" value={form.skills} onChange={e => setForm({...form, skills: e.target.value})} required />
+            </div>
+            <div>
+              <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Cover Letter (Brief)</label>
+              <textarea className="input" rows={3} placeholder="Why do you want to join Z-Lab?" value={form.cover_letter} onChange={e => setForm({...form, cover_letter: e.target.value})} required />
+            </div>
+            <div>
+              <label className="section-label" style={{ fontSize: 11, fontWeight: 700, color: 'var(--slate)', textTransform: 'uppercase', marginBottom: 6, display: 'block' }}>Resume (PDF Only)</label>
+              <div 
+                onClick={() => fileRef.current?.click()}
+                style={{ width: '100%', padding: '14px', borderRadius: 12, border: '2px dashed var(--border)', background: 'var(--bg-soft)', color: 'var(--navy)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
+              >
+                <Upload size={20} style={{ marginBottom: 6, opacity: 0.7 }} />
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{resume ? resume.name : 'Click to upload resume'}</div>
+                <input type="file" hidden ref={fileRef} accept=".pdf" onChange={e => setResume(e.target.files[0])} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 10 }}>
+              <button type="button" className="lp-btn lp-btn--ghost" onClick={() => setApplyModalOpen(false)}>Cancel</button>
+              <button type="submit" className="lp-btn lp-btn--dark" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Submit Application'}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   )
 }

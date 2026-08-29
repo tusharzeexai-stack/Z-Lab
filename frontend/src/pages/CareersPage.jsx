@@ -90,8 +90,8 @@ export const CareersPage = () => {
       <header className={`lp-nav${scrolled ? ' lp-nav--solid' : ''}`} style={{ position: 'sticky' }}>
         <div className="lp-nav__inner">
           <a href="/" className="lp-logo">
-            <img src="/logo.png" alt="ZPortal" className="lp-logo__img" />
-            <span className="lp-logo__text">ZPortal</span>
+            <img src="/logo.png" alt="Z-Lab" className="lp-logo__img" />
+            <span className="lp-logo__text">Z-Lab</span>
           </a>
           <nav className={`lp-nav__links${menuOpen ? ' open' : ''}`}>
             <a href="/#how-it-works" onClick={() => setMenuOpen(false)}>How it Works</a>
@@ -109,7 +109,7 @@ export const CareersPage = () => {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px' }}>
+      <div className="careers-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px' }}>
         
         {/* ────────── HERO ────────── */}
         <section style={{ textAlign: 'center', padding: '100px 0 80px' }}>
@@ -117,7 +117,7 @@ export const CareersPage = () => {
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
             {positions.length} Open Internship Roles
           </div>
-          <h1 style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: 24, lineHeight: 1.0 }}>
+          <h1 className="careers-h1" style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: 24, lineHeight: 1.0 }}>
             Start your professional <br/> <em style={{ fontStyle: 'normal', color: theme.accent }}>chapter at ZLabs.</em>
           </h1>
           <p style={{ fontSize: 18, color: theme.slate, maxWidth: 600, margin: '0 auto 40px', lineHeight: 1.7 }}>
@@ -142,7 +142,7 @@ export const CareersPage = () => {
         </section>
 
         {/* ────────── PERKS (No Emojis) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 100 }}>
+        <div className="perks-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 100 }}>
           {[
             { icon: Users, t: '1-on-1 Mentorship', d: 'Paired with a senior from day one' },
             { icon: Rocket, t: 'Real Impact', d: 'Work on live products, not exercises' },
@@ -177,7 +177,7 @@ export const CareersPage = () => {
             <div style={{ fontSize: 14, color: theme.slate, fontWeight: 500 }}>Showing {positions.length} active roles</div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="careers-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {posLoading ? (
               [1, 2, 3].map(n => <div key={n} style={{ height: 200, background: theme.bg, borderRadius: 20 }} />)
             ) : positions.length > 0 ? (
@@ -317,62 +317,63 @@ export const CareersPage = () => {
       </div>
 
       {/* ────────── FOOTER ────────── */}
-      <footer style={{ padding: '100px 0 60px', background: theme.navy, color: '#fff', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 40px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1.2fr', gap: 60, marginBottom: 80 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-                <img src="/logo.png" alt="ZeexAI" style={{ width: 28, height: 28 }} />
-                <span style={{ fontWeight: 800, fontSize: 18, color: '#fff' }}>ZeexAI</span>
-              </div>
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.6, marginBottom: 32, maxWidth: 320 }}>
+      {/* ────────── FOOTER ────────── */}
+      <footer className="lp-footer">
+        <div className="lp-container">
+          <div className="lp-footer__main">
+            <div className="lp-footer__brand">
+              <a href="/" className="lp-logo lp-logo--light">
+                <img src="/logo.png" alt="ZeexAI" className="lp-logo__img" />
+                <span className="lp-logo__text" style={{ color: '#fff' }}>ZeexAI</span>
+              </a>
+              <p className="lp-footer__desc">
                 Harnessing the power of data and artificial intelligence, Zeex AI empowers organizations to predict risks, ensure safety, and optimize Daily operations—before issues escalate.
               </p>
-              <div style={{ display: 'flex', gap: 20 }}>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}><Globe size={20} /></a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}><Globe size={20} /></a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}><Globe size={20} /></a>
-                <a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}><Camera size={20} /></a>
+              <div className="lp-footer__socials">
+                <a href="#"><Globe size={20} /></a>
+                <a href="#"><Globe size={20} /></a>
+                <a href="#"><Globe size={20} /></a>
+                <a href="#"><Camera size={20} /></a>
               </div>
             </div>
 
-            <div>
-              <h6 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 28 }}>Quick Links</h6>
-              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <li><a href="/" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Home</a></li>
-                <li><a href="/#how-it-works" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>How it Works</a></li>
-                <li><a href="/#benefits" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Benefits</a></li>
-                <li><a href="/#testimonials" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Stories</a></li>
-                <li><a href="/careers" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Careers</a></li>
-                <li><a href="/login" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Staff Portal</a></li>
+            <div className="lp-footer__col">
+              <h6>Quick Links</h6>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/#how-it-works">How it Works</a></li>
+                <li><a href="/#benefits">Benefits</a></li>
+                <li><a href="/#testimonials">Stories</a></li>
+                <li><a href="/careers">Careers</a></li>
+                <li><a href="/login">Staff Portal</a></li>
               </ul>
             </div>
 
-            <div>
-              <h6 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 28 }}>Our Services</h6>
-              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <li><a href="#" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Retail & Security</a></li>
-                <li><a href="#" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Bank & ATM Solutions</a></li>
-                <li><a href="#" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Industrial Safety</a></li>
-                <li><a href="#" style={{ textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Smart City Surveillance</a></li>
+            <div className="lp-footer__col">
+              <h6>Our Services</h6>
+              <ul>
+                <li><a href="#">Retail & High-Risk Shop Security</a></li>
+                <li><a href="#">Bank & ATM Security Solutions</a></li>
+                <li><a href="#">Industrial Safety Monitoring</a></li>
+                <li><a href="#">Smart City Surveillance</a></li>
               </ul>
             </div>
 
-            <div>
-              <h6 style={{ color: '#fff', fontSize: 16, fontWeight: 700, marginBottom: 28 }}>Contact Us</h6>
-              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'rgba(255,255,255,0.6)', fontSize: 14 }}><Phone size={18} /> +91 8709221636</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'rgba(255,255,255,0.6)', fontSize: 14 }}><Mail size={18} /> admin@zeexai.com</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'rgba(255,255,255,0.6)', fontSize: 14 }}><MapPin size={18} /> IIT Madras</li>
+            <div className="lp-footer__col">
+              <h6>Contact Us</h6>
+              <ul className="lp-footer__contact">
+                <li><Phone size={18} /> <span>+91 8709221636</span></li>
+                <li><Mail size={18} /> <span>admin@zeexai.com</span></li>
+                <li><MapPin size={18} /> <span>Nirmaan, CFI, IIT Madras</span></li>
               </ul>
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 40, borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
+          <div className="lp-footer__bottom">
             <span>© 2026 ZeexAI. All rights reserved.</span>
-            <div style={{ display: 'flex', gap: 24 }}>
-              <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Privacy Policy</a>
-              <a href="#" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Terms of Service</a>
+            <div className="lp-footer__legal">
+              <a href="#" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', marginLeft: 24 }}>Privacy Policy</a>
+              <a href="#" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', marginLeft: 24 }}>Terms of Service</a>
             </div>
           </div>
         </div>

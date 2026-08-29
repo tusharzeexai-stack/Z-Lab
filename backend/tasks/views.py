@@ -148,6 +148,7 @@ class TaskListCreateView(generics.ListCreateAPIView):
                     login_url=f"{settings.FRONTEND_URL}/login",
                     custom_subject=email_subject,
                     custom_body=email_body,
+                    submission_url=f"{settings.FRONTEND_URL}/submit/{task.submission_token}",
                 )
         except Exception:
             pass

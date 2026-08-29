@@ -21,6 +21,7 @@ class UserProfile(models.Model):
     resume = models.FileField(upload_to='resumes/', blank=True, null=True)
     location = models.CharField(max_length=200, blank=True)
     is_direct_enroll = models.BooleanField(default=False)
+    temp_password = models.CharField(max_length=128, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

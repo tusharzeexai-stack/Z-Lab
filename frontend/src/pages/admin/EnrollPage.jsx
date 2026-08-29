@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { authApi } from '../../api'
 import { toast } from '../../components/Toast'
+import { useAuth } from '../../contexts/AuthContext'
 import { 
   UserPlus, 
   ArrowLeft, 
@@ -22,12 +23,37 @@ import {
   Download,
   Eye,
   ExternalLink,
+  Key,
   Search
 } from 'lucide-react'
 
 export const EnrollPage = () => {
   const navigate = useNavigate()
+  const { role: userRole } = useAuth()
   const [mode, setMode] = useState('single') // 'single' or 'bulk'
+
+  const getAllowedRoles = () => {
+    if (userRole === 'super_admin') {
+      return [
+        { value: 'intern', label: 'Intern' },
+        { value: 'mentor', label: 'Mentor' },
+        { value: 'team_head', label: 'Team Leader' },
+        { value: 'admin', label: 'Admin' }
+      ]
+    } else if (userRole === 'admin') {
+      return [
+        { value: 'intern', label: 'Intern' },
+        { value: 'mentor', label: 'Mentor' },
+        { value: 'team_head', label: 'Team Leader' }
+      ]
+    } else {
+      return [
+        { value: 'intern', label: 'Intern' }
+      ]
+    }
+  }
+
+  const allowedRoles = getAllowedRoles()
   
   // History State
   const [recentUsers, setRecentUsers] = useState([])
@@ -36,7 +62,7 @@ export const EnrollPage = () => {
   // Single Mode State
   const [formData, setFormData] = useState({ 
     first_name: '', last_name: '', email: '', phone: '', role: 'intern', domain: '', resume: null,
-    skills: ''
+    skills: '', username: '', password: ''
   })
   
   // Bulk Mode State
@@ -162,6 +188,9 @@ export const EnrollPage = () => {
     setProcessing(false)
     toast.success('Bulk enrollment completed!')
     fetchHistory()
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }
 
   const copyToClipboard = (text) => {
@@ -175,7 +204,18 @@ export const EnrollPage = () => {
         title="Enrollment Center" 
         subtitle="Onboard new members individually or in bulk"
         actions={
-          <button onClick={() => navigate('/admin/dashboard')} className="btn btn-ghost btn-sm">
+          <button 
+            onClick={() => {
+              if (userRole === 'super_admin' || userRole === 'admin') {
+                navigate('/admin')
+              } else if (userRole === 'team_head') {
+                navigate('/team-head')
+              } else {
+                navigate('/team')
+              }
+            }} 
+            className="btn btn-ghost btn-sm"
+          >
             <ArrowLeft size={16} /> Back to Dashboard
           </button>
         }
@@ -236,12 +276,28 @@ export const EnrollPage = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
                   <div>
+                    <label className="section-label">Custom Username (Optional)</label>
+                    <div style={{ position: 'relative' }}>
+                      <User size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                      <input className="input" style={{ paddingLeft: 40 }} placeholder="Auto-generated if empty" value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="section-label">Custom Password (Optional)</label>
+                    <div style={{ position: 'relative' }}>
+                      <Key size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                      <input className="input" style={{ paddingLeft: 40 }} type="text" placeholder="Auto-generated if empty" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
+                  <div>
                     <label className="section-label">Role Assignment</label>
                     <select className="input" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} required>
-                      <option value="intern">Intern</option>
-                      <option value="team_member">Team Member</option>
-                      <option value="team_head">Team Head</option>
-                      <option value="admin">Admin</option>
+                      {allowedRoles.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -376,9 +432,9 @@ export const EnrollPage = () => {
                             </td>
                             <td style={{ padding: '16px 24px' }}>
                               <select className="input-sm" value={row.role} onChange={e => setBulkRows(prev => prev.map(r => r.id === row.id ? { ...r, role: e.target.value } : r))} disabled={processing || row.status === 'success'}>
-                                <option value="intern">Intern</option>
-                                <option value="team_member">Member</option>
-                                <option value="team_head">Head</option>
+                                {allowedRoles.map(opt => (
+                                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
                               </select>
                             </td>
                             <td style={{ padding: '16px 24px', textAlign: 'right' }}>
@@ -500,7 +556,13 @@ export const EnrollPage = () => {
               </div>
             </div>
 
-            <button className="btn btn-primary w-full" onClick={() => setSuccessData(null)}>Enroll Another</button>
+            <button className="btn btn-primary w-full" onClick={() => {
+              setSuccessData(null)
+              setFormData({ 
+                first_name: '', last_name: '', email: '', phone: '', role: 'intern', domain: '', resume: null,
+                skills: '', username: '', password: ''
+              })
+            }}>Enroll Another</button>
           </div>
         </div>
       )}
