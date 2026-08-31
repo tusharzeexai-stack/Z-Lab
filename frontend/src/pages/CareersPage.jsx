@@ -40,8 +40,11 @@ export const CareersPage = () => {
 
   useEffect(() => {
     internshipApi.positions({ open: 'true' })
-      .then(r => setPositions(r.data.results || r.data))
-      .catch(() => {})
+      .then(r => {
+        const data = r.data.results ?? r.data
+        setPositions(Array.isArray(data) ? data : [])
+      })
+      .catch(() => setPositions([]))
       .finally(() => setPosLoading(false))
   }, [])
 
@@ -397,3 +400,5 @@ export const CareersPage = () => {
 }
 
 export default CareersPage
+
+

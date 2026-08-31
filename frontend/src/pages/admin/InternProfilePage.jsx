@@ -5,7 +5,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { FileUpload } from '../../components/FileUpload'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { authApi, internshipApi, taskApi, projectApi, teamApi } from '../../api'
+import { safeList, authApi, internshipApi, taskApi, projectApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon } from 'lucide-react'
 
@@ -89,12 +89,12 @@ export const InternProfilePage = () => {
 
   useEffect(() => {
     loadIntern()
-    projectApi.list().then(r => setProjects(r.data.results || r.data))
+    projectApi.list().then(r => setProjects(safeList(r.data)))
     
     const canPromote = ['super_admin', 'admin', 'mentor', 'team_member', 'team_head'].includes(role)
     if (canPromote) {
-        authApi.mentors().then(r => setMentors(r.data.results || r.data))
-        teamApi.list().then(r => setTeams(r.data.results || r.data))
+        authApi.mentors().then(r => setMentors(safeList(r.data)))
+        teamApi.list().then(r => setTeams(safeList(r.data)))
     }
   }, [id, role])
 
@@ -716,3 +716,6 @@ export const InternProfilePage = () => {
     </Layout>
   )
 }
+
+
+

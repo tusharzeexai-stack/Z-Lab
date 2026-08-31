@@ -2,6 +2,13 @@ import axios from 'axios'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
+// Safely extract an array from a paginated or plain API response.
+// Prevents "x.map is not a function" when the backend returns an error object/string.
+export const safeList = (data) => {
+  const raw = data?.results ?? data
+  return Array.isArray(raw) ? raw : []
+}
+
 const api = axios.create({
   baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },

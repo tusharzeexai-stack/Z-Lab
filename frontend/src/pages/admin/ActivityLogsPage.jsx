@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
 import { RoleBadge } from '../../components/StatusBadge'
-import { logApi } from '../../api'
+import { safeList, logApi } from '../../api'
 
 export const ActivityLogsPage = () => {
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    logApi.list().then(r => setLogs(r.data.results || r.data)).finally(() => setLoading(false))
+    logApi.list().then(r => setLogs(safeList(r.data))).finally(() => setLoading(false))
   }, [])
 
   const icons = {
@@ -51,3 +51,6 @@ export const ActivityLogsPage = () => {
     </Layout>
   )
 }
+
+
+

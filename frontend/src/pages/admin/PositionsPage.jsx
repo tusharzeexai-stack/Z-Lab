@@ -3,7 +3,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { internshipApi } from '../../api'
+import { safeList, internshipApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { 
   Briefcase, CheckCircle2, ChevronRight, Edit2, Trash2, HelpCircle, 
@@ -43,7 +43,7 @@ export const PositionsPage = () => {
   const load = () => {
     setLoading(true)
     internshipApi.positions()
-      .then(r => setPositions(r.data.results || r.data))
+      .then(r => setPositions(safeList(r.data)))
       .finally(() => setLoading(false))
   }
 
@@ -322,3 +322,6 @@ export const PositionsPage = () => {
     </Layout>
   )
 }
+
+
+

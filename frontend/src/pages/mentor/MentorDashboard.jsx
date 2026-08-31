@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
-import { internshipApi } from '../../api'
+import { safeList, internshipApi } from '../../api'
 import { toast } from '../../components/Toast'
 import { CheckCircle2, Award, UserPlus, GraduationCap, ArrowRight } from 'lucide-react'
 
@@ -9,7 +9,7 @@ export const MentorDashboard = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    internshipApi.interns().then(r => setInterns(r.data.results || r.data)).finally(() => setLoading(false))
+    internshipApi.interns().then(r => setInterns(safeList(r.data))).finally(() => setLoading(false))
   }, [])
 
   const markReady = async (id) => {
@@ -17,7 +17,7 @@ export const MentorDashboard = () => {
     try {
       await internshipApi.markReady(id)
       toast.success('Intern marked as ready for team!')
-      internshipApi.interns().then(r => setInterns(r.data.results || r.data))
+      internshipApi.interns().then(r => setInterns(safeList(r.data)))
     } catch (e) { toast.error(e.response?.data?.error || 'Failed') }
   }
 
@@ -98,3 +98,6 @@ export const MentorDashboard = () => {
     </Layout>
   )
 }
+
+
+

@@ -14,3 +14,5 @@ export const RoleBadge = ({ role }) => {
   }
   return <span className={`role-badge role-${role}`}>{labels[role] || role}</span>
 }
+
+

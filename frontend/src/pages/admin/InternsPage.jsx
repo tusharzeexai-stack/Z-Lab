@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
-import { internshipApi } from '../../api'
+import { safeList, internshipApi } from '../../api'
 import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowRight, ExternalLink } from 'lucide-react'
@@ -16,7 +16,7 @@ export const InternsPage = () => {
 
   const load = () => {
     setLoading(true)
-    internshipApi.interns().then(r => setInterns(r.data.results || r.data)).finally(() => setLoading(false))
+    internshipApi.interns().then(r => setInterns(safeList(r.data))).finally(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [])
@@ -174,3 +174,5 @@ export const InternsPage = () => {
     </Layout>
   )
 }
+
+

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { teamApi, authApi } from '../../api'
+import { safeList, teamApi, authApi } from '../../api'
 
 export const TeamsPage = () => {
   const [teams, setTeams] = useState([])
@@ -18,12 +18,12 @@ export const TeamsPage = () => {
 
   const load = () => {
     setLoading(true)
-    teamApi.list().then(r => setTeams(r.data.results || r.data)).finally(() => setLoading(false))
+    teamApi.list().then(r => setTeams(safeList(r.data))).finally(() => setLoading(false))
   }
 
   useEffect(() => {
     load()
-    authApi.users().then(r => setUsers(r.data.results || r.data))
+    authApi.users().then(r => setUsers(safeList(r.data)))
   }, [])
 
   const createTeam = async (e) => {
@@ -192,3 +192,6 @@ export const TeamsPage = () => {
     </Layout>
   )
 }
+
+
+

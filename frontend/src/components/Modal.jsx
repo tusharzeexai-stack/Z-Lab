@@ -21,3 +21,5 @@ export const Modal = ({ open, onClose, title, children, size = 'md' }) => {
     </div>
   )
 }
+
+

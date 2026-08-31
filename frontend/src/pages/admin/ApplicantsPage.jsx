@@ -3,7 +3,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { internshipApi, authApi } from '../../api'
+import { safeList, internshipApi, authApi } from '../../api'
 import { Briefcase, GraduationCap } from 'lucide-react'
 
 const ROLES = [
@@ -63,12 +63,12 @@ export const ApplicantsPage = () => {
   const load = () => {
     setLoading(true)
     internshipApi.applications({ status: filter, app_type: appTypeFilter, role: roleFilter, search }).then(r => {
-      setApps(r.data.results || r.data)
+      setApps(safeList(r.data))
     }).finally(() => setLoading(false))
   }
 
   const loadMentors = () => {
-    authApi.mentors().then(r => setMentors(r.data.results || r.data))
+    authApi.mentors().then(r => setMentors(safeList(r.data)))
   }
 
   useEffect(() => {
@@ -258,3 +258,6 @@ export const ApplicantsPage = () => {
     </Layout>
   )
 }
+
+
+

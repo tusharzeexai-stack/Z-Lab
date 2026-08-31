@@ -4,7 +4,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { RoleBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { authApi } from '../../api'
+import { safeList, authApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { Eye, Settings } from 'lucide-react'
 
@@ -30,7 +30,7 @@ export const MembersPage = ({ defaultRole }) => {
 
     authApi.users({ search, role: effectiveRole })
       .then(r => {
-        let data = r.data.results || r.data
+        let data = safeList(r.data)
         if (roleFilter !== 'intern' && defaultRole !== 'intern') {
           data = data.filter(u => u.profile?.role !== 'intern')
         }
@@ -221,3 +221,6 @@ export const MembersPage = ({ defaultRole }) => {
     </Layout>
   )
 }
+
+
+

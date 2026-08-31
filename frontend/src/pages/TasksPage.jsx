@@ -4,7 +4,7 @@ import { StatusBadge } from '../components/StatusBadge'
 import { useAuth } from '../contexts/AuthContext'
 import { Modal } from '../components/Modal'
 import { toast } from '../components/Toast'
-import { taskApi, authApi, teamApi, projectApi } from '../api'
+import { safeList, taskApi, authApi, teamApi, projectApi } from '../api'
 import { FileUpload } from '../components/FileUpload'
 import { 
   Link, 
@@ -44,22 +44,22 @@ export const TasksPage = ({ role, taskType }) => {
       search: filters.search,
       task_type: taskType === 'intern' ? 'intern' : 'team' 
     })
-      .then(r => setTasks(r.data.results || r.data))
+      .then(r => setTasks(safeList(r.data)))
       .finally(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [filters, taskType])
   useEffect(() => {
     teamApi.list().then(r => {
-      const tData = r.data.results || r.data
+      const tData = safeList(r.data)
       setTeams(tData)
       // Pre-select team if only one is available and none selected
       if (tData.length === 1 && !taskForm.team) {
         setTaskForm(prev => ({ ...prev, team: tData[0].id }))
       }
     })
-    authApi.users().then(r => setUsers(r.data.results || r.data)).catch(() => setUsers([]))
-    projectApi.list().then(r => setProjects(r.data.results || r.data))
+    authApi.users().then(r => setUsers(safeList(r.data))).catch(() => setUsers([]))
+    projectApi.list().then(r => setProjects(safeList(r.data)))
   }, [])
 
   const createTask = async (e) => {
@@ -454,3 +454,6 @@ export const TasksPage = ({ role, taskType }) => {
     </Layout>
   )
 }
+
+
+

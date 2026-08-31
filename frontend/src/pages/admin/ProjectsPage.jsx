@@ -3,7 +3,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { projectApi, teamApi } from '../../api'
+import { safeList, projectApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { Folder, CheckCircle2, ChevronDown } from 'lucide-react'
 
@@ -31,12 +31,12 @@ export const ProjectsPage = () => {
 
   const load = () => {
     setLoading(true)
-    projectApi.list().then(r => setProjects(r.data.results || r.data)).finally(() => setLoading(false))
+    projectApi.list().then(r => setProjects(safeList(r.data))).finally(() => setLoading(false))
   }
 
   useEffect(() => {
     load()
-    teamApi.list().then(r => setTeams(r.data.results || r.data))
+    teamApi.list().then(r => setTeams(safeList(r.data)))
   }, [])
 
   const create = async (e) => {
@@ -341,3 +341,6 @@ export const ProjectsPage = () => {
     </Layout>
   )
 }
+
+
+

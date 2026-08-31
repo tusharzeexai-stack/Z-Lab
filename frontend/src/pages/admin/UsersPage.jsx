@@ -3,7 +3,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { RoleBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { authApi } from '../../api'
+import { safeList, authApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { Edit2, Trash2 } from 'lucide-react'
 
@@ -20,7 +20,7 @@ export const UsersPage = () => {
   const loadUsers = () => {
     setLoading(true)
     authApi.users({ search, role: roleFilter })
-      .then(r => setUsers(r.data.results || r.data))
+      .then(r => setUsers(safeList(r.data)))
       .finally(() => setLoading(false))
   }
 
@@ -168,3 +168,6 @@ export const UsersPage = () => {
     </Layout>
   )
 }
+
+
+
