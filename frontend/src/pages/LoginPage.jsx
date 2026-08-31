@@ -26,7 +26,8 @@ export const LoginPage = () => {
       }
       navigate(routes[role] || '/')
     } catch (err) {
-      setError(err.response?.data?.detail || err.response?.data?.error || 'Invalid username or password.')
+      const msg = err.response?.data?.detail || err.response?.data?.error || err.message || 'Invalid username or password.'
+      setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
     } finally { setLoading(false) }
   }
 
