@@ -127,6 +127,8 @@ class AnalyticsView(APIView):
             count = Task.objects.filter(created_at__year=first_day.year, created_at__month=first_day.month).count()
             monthly_tasks.append({'month': month_label, 'count': count})
 
+        status_dist = [{'status': x['status'], 'count': x['count']} for x in Task.objects.values('status').annotate(count=Count('id'))]
+
         data = {
             'total_users': User.objects.count(),
             'total_interns': InternProfile.objects.count(),
@@ -139,6 +141,7 @@ class AnalyticsView(APIView):
             'ready_for_team': InternProfile.objects.filter(is_ready_for_team=True, converted_at__isnull=True).count(),
             'converted_interns': InternProfile.objects.filter(converted_at__isnull=False).count(),
             'users_by_role': {x['profile__role']: x['count'] for x in User.objects.values('profile__role').annotate(count=Count('id'))},
+            'task_status_distribution': status_dist,
             'monthly_tasks': monthly_tasks
         }
 

@@ -79,6 +79,10 @@ export const AdminDashboard = () => {
   }
 
   const s = stats || {}
+  const taskChart = (s.task_status_distribution || []).map(x => ({
+    status: (x.status || '').replace(/_/g, ' '),
+    count: x.count || 0,
+  }))
 
   const summaryStats = [
     { label: 'Total Platform Users', value: s.total_users || 0, color: 'var(--blue)', icon: <Users size={24} />, sub: 'Registered accounts' },
