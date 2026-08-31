@@ -513,7 +513,7 @@ class MigrateToZHajiriiView(APIView):
             "password_hash": "$2a$10$e8w.K2O8sF/K8/Gk4R4H2.f8XJ0X0zW7W7W7W7W7W7W7W",
             "full_name": name,
             "email": email,
-            "employee_id": emp_id,
+            "employee_id": f"zh-int-{intern.id}",
             "department": "Z-Lab Hired",
             "designation": domain,
             "phone_number": phone,
@@ -536,7 +536,7 @@ class MigrateToZHajiriiView(APIView):
 
         results = {}
         errors = []
-        for endpoint, payload in [('/users', zhajirii_user), ('/employees', zhajirii_employee)]:
+        for endpoint, payload in [('/employees', zhajirii_employee), ('/users', zhajirii_user)]:
             try:
                 url = f"{target_url.rstrip('/')}{endpoint}"
                 data = json.dumps(payload).encode('utf-8')
