@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
-import { taskApi, internshipApi, projectApi, teamApi } from '../../api'
+import { taskApi, internshipApi, teamApi } from '../../api'
 import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
 import { Calendar, Trash2, ArrowRight, Plus } from 'lucide-react'
@@ -10,7 +10,6 @@ export const TeamMemberDashboard = () => {
   const { user, role } = useAuth()
   const [tasks, setTasks] = useState([])
   const [interns, setInterns] = useState([])
-  const [projects, setProjects] = useState([])
   const [meetings, setMeetings] = useState([])
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,17 +21,14 @@ export const TeamMemberDashboard = () => {
     Promise.all([
       taskApi.list(),
       internshipApi.interns().catch(() => ({ data: [] })),
-      projectApi.list().catch(() => ({ data: [] })),
       teamApi.listMeetings().catch(() => ({ data: [] })),
-      teamApi.list().catch(() => ({ data: [] })), // Need teams for creation modal
-    ]).then(([tr, ir, pr, mr, teamsRes]) => {
+      teamApi.list().catch(() => ({ data: [] })),
+    ]).then(([tr, ir, mr, teamsRes]) => {
       setTasks(tr.data.results || tr.data)
       setInterns(ir.data.results || ir.data)
-      setProjects(pr.data.results || pr.data)
       setMeetings(mr.data.results || mr.data)
       const myTeams = teamsRes.data.results || teamsRes.data
       setTeams(myTeams)
-      // If team member is only in one team, pre-select it
       if (myTeams.length > 0 && !meetingForm.team) {
           setMeetingForm(prev => ({ ...prev, team: myTeams[0].id }))
       }

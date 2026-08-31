@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { chatApi } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { 
   LayoutDashboard, 
   UserPlus, 
   GraduationCap, 
   Users, 
-  FolderKanban, 
-  CheckSquare, 
-  Hammer, 
+  Briefcase,
   User,
-  Network,
   LogOut,
-  MessageSquare,
-  Briefcase
 } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 const NAV = {
   admin: [
@@ -39,7 +34,6 @@ const NAV = {
   ],
   team_head: [
     { to: '/team-head', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-    { to: '/team-head/members', label: 'Team Members', icon: <Users size={18} /> },
     { to: '/team-head/interns', label: 'My Interns', icon: <GraduationCap size={18} /> },
     { to: '/profile', label: 'My Profile', icon: <User size={18} /> },
   ],
@@ -61,36 +55,9 @@ const ROLE_LABELS = {
 
 import { toast } from './Toast'
 
-import { Menu, X } from 'lucide-react'
-
 export const Sidebar = ({ isOpen, onClose }) => {
   const { user, role, logout } = useAuth()
   const links = NAV[role] || []
-  const [totalUnread, setTotalUnread] = useState(0)
-  const prevUnreadRef = React.useRef(0)
-
-  useEffect(() => {
-    if (!user) return;
-    const fetchUnread = async () => {
-      try {
-        const res = await chatApi.getGroups();
-        const loadedGroups = res.data?.results || res.data || [];
-        const unread = loadedGroups.reduce((acc, g) => acc + (g.unread_count || 0), 0);
-        
-        if (unread > prevUnreadRef.current && window.location.pathname !== '/chat') {
-          toast.info('New message in Team Chat!');
-        }
-        prevUnreadRef.current = unread;
-        setTotalUnread(unread);
-      } catch (err) {
-        console.error('Failed to fetch unread count', err);
-      }
-    };
-    
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 10000); // Poll every 10 seconds globally
-    return () => clearInterval(interval);
-  }, [user]);
 
   const initials = user?.first_name
     ? `${user.first_name[0]}${user.last_name?.[0] || ''}`.toUpperCase()
@@ -140,14 +107,6 @@ export const Sidebar = ({ isOpen, onClose }) => {
           >
             <span style={{ fontSize: 14, width: 22, display: 'flex', alignItems: 'center' }}>{link.icon}</span>
             <span style={{ flex: 1 }}>{link.label}</span>
-            {link.to === '/chat' && totalUnread > 0 && (
-              <span style={{ 
-                background: 'var(--blue)', color: 'white', fontSize: 10, 
-                padding: '2px 6px', borderRadius: 10, fontWeight: 'bold' 
-              }}>
-                {totalUnread > 99 ? '99+' : totalUnread}
-              </span>
-            )}
           </NavLink>
         ))}
       </nav>
@@ -161,5 +120,3 @@ export const Sidebar = ({ isOpen, onClose }) => {
     </div>
   )
 }
-
-

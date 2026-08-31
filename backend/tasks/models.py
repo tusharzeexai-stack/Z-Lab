@@ -35,9 +35,6 @@ class Task(models.Model):
     team = models.ForeignKey(
         'teams.Team', null=True, blank=True, on_delete=models.SET_NULL, related_name='tasks'
     )
-    project = models.ForeignKey(
-        'projects.Project', null=True, blank=True, on_delete=models.SET_NULL, related_name='tasks'
-    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     task_type = models.CharField(max_length=20, choices=TASK_TYPE_CHOICES, default='intern')
     round_number = models.IntegerField(default=1, null=True, blank=True)

@@ -20,7 +20,6 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,9 +35,6 @@ INSTALLED_APPS = [
     'internships',
     'tasks',
     'teams',
-    'projects',
-    'activity_logs',
-    'chat',
 ]
 
 MIDDLEWARE = [
@@ -71,23 +67,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-ASGI_APPLICATION = 'core.asgi.application'
 
-if env.bool('USE_REDIS', default=False):
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                'hosts': [(env('REDIS_HOST', default='127.0.0.1'), env.int('REDIS_PORT', default=6379))],
-            },
-        },
-    }
-else:
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        },
-    }
+
 
 import shutil
 

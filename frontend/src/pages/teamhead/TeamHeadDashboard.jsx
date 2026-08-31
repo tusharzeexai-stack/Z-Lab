@@ -4,7 +4,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { FileUpload } from '../../components/FileUpload'
 import { toast } from '../../components/Toast'
-import { taskApi, teamApi, projectApi, authApi } from '../../api'
+import { taskApi, teamApi, authApi } from '../../api'
 import { 
   Users, 
   CheckCircle2, 
@@ -21,12 +21,11 @@ export const TeamHeadDashboard = () => {
   const { user, role } = useAuth()
   const [tasks, setTasks] = useState([])
   const [teams, setTeams] = useState([])
-  const [projects, setProjects] = useState([])
   const [members, setMembers] = useState([]) // all users I can assign to
   const [loading, setLoading] = useState(true)
   const [assignModal, setAssignModal] = useState(false)
   const [taskForm, setTaskForm] = useState({
-    title: '', description: '', deadline: '', assigned_to_id: '', team: '', project: '',
+    title: '', description: '', deadline: '', assigned_to_id: '', team: '',
   })
   const [taskFile, setTaskFile] = useState(null)
   const [acting, setActing] = useState(false)
@@ -39,14 +38,12 @@ export const TeamHeadDashboard = () => {
     Promise.all([
       taskApi.list(),
       teamApi.list(),
-      projectApi.list(),
       authApi.users(),
       teamApi.listMeetings(),
-    ]).then(([tr, teamr, projr, usersr, meetingsr]) => {
+    ]).then(([tr, teamr, usersr, meetingsr]) => {
       setTasks(tr.data.results || tr.data)
       const teamList = teamr.data.results || teamr.data
       setTeams(teamList)
-      setProjects(projr.data.results || projr.data)
       setMembers(usersr.data.results || usersr.data)
       setMeetings(meetingsr.data.results || meetingsr.data)
       if (teamList.length > 0) {

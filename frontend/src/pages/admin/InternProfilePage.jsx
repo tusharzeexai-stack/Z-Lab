@@ -5,7 +5,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { FileUpload } from '../../components/FileUpload'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { safeList, authApi, internshipApi, taskApi, projectApi, teamApi } from '../../api'
+import { safeList, authApi, internshipApi, taskApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon } from 'lucide-react'
 

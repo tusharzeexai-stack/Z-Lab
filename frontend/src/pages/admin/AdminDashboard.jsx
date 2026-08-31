@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
-import { authApi, internshipApi, taskApi, teamApi } from '../../api'
+import { authApi, teamApi } from '../../api'
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
   AreaChart, Area, PieChart, Pie
@@ -33,7 +33,6 @@ export const AdminDashboard = () => {
   const { role } = useAuth()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [taskChart, setTaskChart] = useState([])
   const [meetings, setMeetings] = useState([])
   const [teams, setTeams] = useState([])
   const [meetingModal, setMeetingModal] = useState(false)
@@ -43,13 +42,10 @@ export const AdminDashboard = () => {
   useEffect(() => {
     Promise.all([
       authApi.analytics(),
-      taskApi.list(),
-      internshipApi.applications({ status: 'pending' }),
       teamApi.listMeetings().catch(() => ({ data: [] })),
       teamApi.list().catch(() => ({ data: [] })),
-    ]).then(([analyticsRes, taskRes, appRes, meetingsRes, teamsRes]) => {
+    ]).then(([analyticsRes, meetingsRes, teamsRes]) => {
       setStats(analyticsRes.data)
-      const tasks = taskRes.data.results || taskRes.data
       const meetingsData = meetingsRes.data.results || meetingsRes.data || []
       setMeetings(meetingsData)
       const allTeams = teamsRes.data.results || teamsRes.data || []
@@ -57,13 +53,6 @@ export const AdminDashboard = () => {
       if (allTeams.length > 0 && !meetingForm.team) {
           setMeetingForm(prev => ({ ...prev, team: allTeams[0].id }))
       }
-
-      const byStatus = {}
-      tasks.forEach(t => { byStatus[t.status] = (byStatus[t.status] || 0) + 1 })
-      setTaskChart(Object.entries(byStatus).map(([status, count]) => ({
-        status: status.replace(/_/g, ' '),
-        count,
-      })))
     }).finally(() => setLoading(false))
   }, [])
 

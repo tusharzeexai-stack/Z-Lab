@@ -138,29 +138,3 @@ export const teamApi = {
   updateMeeting: (id, data) => api.patch(`/teams/meetings/${id}/`, data),
   deleteMeeting: (id) => api.delete(`/teams/meetings/${id}/`),
 }
-
-// ── Projects ───────────────────────────────────────────────────────────────────
-export const projectApi = {
-  list: (params) => api.get('/projects/', { params }),
-  create: (data) => api.post('/projects/', data),
-  detail: (id) => api.get(`/projects/${id}/`),
-  update: (id, data) => api.patch(`/projects/${id}/`, data),
-  delete: (id) => api.delete(`/projects/${id}/`),
-}
-
-// ── Activity Logs ──────────────────────────────────────────────────────────────
-export const logApi = {
-  list: (params) => api.get('/activity-logs/', { params }),
-}
-
-// ── Chat ───────────────────────────────────────────────────────────────────────
-export const chatApi = {
-  getGroups: () => api.get(`/chat/groups/?t=${Date.now()}`),
-  getMessages: (groupId) => api.get(`/chat/groups/${groupId}/messages/`),
-  getOrCreate: (data) => api.post('/chat/groups/get_or_create/', data),
-  markRead: (groupId) => api.post(`/chat/groups/${groupId}/mark_read/`),
-  sendMessageWithFile: (groupId, formData) => api.post(`/chat/groups/${groupId}/messages/`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-}
-
