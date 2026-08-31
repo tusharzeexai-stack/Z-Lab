@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'internships',
     'tasks',
     'teams',
+    'projects',
+    'activity_logs',
 ]
 
 MIDDLEWARE = [
