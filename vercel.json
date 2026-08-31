@@ -11,17 +11,35 @@
   },
   "rewrites": [
     {
-      "source": "/api/(.*)?",
+      "source": "/api/:path*",
       "destination": {
         "type": "service",
-        "service": "backend"
+        "service": "backend",
+        "path": "/api/:path*"
+      }
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": {
+        "type": "service",
+        "service": "frontend",
+        "path": "/assets/:path*"
+      }
+    },
+    {
+      "source": "/logo.png",
+      "destination": {
+        "type": "service",
+        "service": "frontend",
+        "path": "/logo.png"
       }
     },
     {
       "source": "/(.*)",
       "destination": {
         "type": "service",
-        "service": "frontend"
+        "service": "frontend",
+        "path": "/index.html"
       }
     }
   ]
