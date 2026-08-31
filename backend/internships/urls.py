@@ -5,7 +5,7 @@ from .views import (
     ApplicationSendInterviewMailView,
     InternListView, InternDetailView,
     AssignMentorView, MarkReadyView, ConvertInternView, UpdateInternRoundView,
-    OpenPositionListView, OpenPositionDetailView,
+    OpenPositionListView, OpenPositionDetailView, MigrateToZHajiriiView,
 )
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     path('interns/<int:pk>/mark-ready/', MarkReadyView.as_view(), name='mark_ready'),
     path('interns/<int:pk>/convert/', ConvertInternView.as_view(), name='convert_intern'),
     path('interns/<int:pk>/round/', UpdateInternRoundView.as_view(), name='update_round'),
+    path('interns/<int:pk>/migrate-to-zhajirii/', MigrateToZHajiriiView.as_view(), name='migrate_zhajirii'),
 ]

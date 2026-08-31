@@ -268,13 +268,9 @@ export const AdminDashboard = () => {
                 {[
                   { label: 'Review Applications', href: '/admin/applicants', icon: <UserPlus className="text-blue" />, desc: 'Approve or reject new candidates' },
                   { label: 'Manage Interns', href: '/admin/interns', icon: <GraduationCap className="text-purple" />, desc: 'Lifecycle and mentor assignment' },
-                  { label: 'Teams & Departments', href: '/admin/teams', icon: <Users2 className="text-green" />, desc: 'In-house team organization' },
-                  { label: 'Task Oversight', href: '/admin/tasks/interns', icon: <ClipboardCheck className="text-amber" />, desc: 'Monitor progress & feedback' },
-                  { label: 'Project Pipeline', href: '/admin/projects', icon: <FolderKanban className="text-blue" />, desc: 'High-level project tracking' },
-                  { label: 'Audit Logs', href: '/admin/logs', icon: <FileText className="text-secondary" />, desc: 'System activity & security logs' },
-                  ...(role === 'super_admin' ? [
-                    { label: 'Manage Job Openings', href: '/admin/positions', icon: <Briefcase className="text-pink" />, desc: 'Manage careers positions & details' }
-                  ] : []),
+                  { label: 'Job Openings', href: '/admin/positions', icon: <Briefcase className="text-amber" />, desc: 'Manage careers positions & details' },
+                  { label: 'Enroll Member', href: '/admin/enroll', icon: <UserPlus className="text-green" />, desc: 'Directly add interns/members' },
+                  { label: 'Settings & Users', href: '/admin/users', icon: <Users className="text-secondary" />, desc: 'Account & role management' },
                 ].map(action => (
                   <div key={action.href} onClick={() => navigate(action.href)} className="card card-sm hover-lift" style={{ textDecoration: 'none', display: 'flex', gap: 16, alignItems: 'center', cursor: 'pointer' }}>
                     <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--bg-base)', border: '1px solid var(--border-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

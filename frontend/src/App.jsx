@@ -80,8 +80,9 @@ function App() {
           {/* ── Admin ──────────────────────────────────────────────── */}
           <Route path="/admin" element={<Protected roles={['admin', 'super_admin']}><AdminDashboard /></Protected>} />
           <Route path="/admin/applicants" element={<Protected roles={['admin', 'super_admin']}><ApplicantsPage /></Protected>} />
-          <Route path="/admin/positions" element={<Protected roles={['super_admin']}><PositionsPage /></Protected>} />
+          <Route path="/admin/positions" element={<Protected roles={['admin', 'super_admin']}><PositionsPage /></Protected>} />
           <Route path="/admin/interns" element={<Protected roles={['admin', 'super_admin']}><InternsPage /></Protected>} />
+          <Route path="/admin/members" element={<Protected roles={['admin', 'super_admin']}><MembersPage /></Protected>} />
           <Route path="/admin/admins" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="admin" /></Protected>} />
           <Route path="/admin/mentors" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="mentor" /></Protected>} />
           <Route path="/admin/team-leaders" element={<Protected roles={['admin', 'super_admin']}><MembersPage defaultRole="team_head" /></Protected>} />

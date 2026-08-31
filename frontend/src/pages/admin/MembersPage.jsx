@@ -23,7 +23,7 @@ export const MembersPage = ({ defaultRole }) => {
     setLoading(true)
     let effectiveRole = roleFilter
     if (!effectiveRole) {
-      effectiveRole = defaultRole === 'admin' ? 'admin,super_admin' : (defaultRole || 'mentor,team_head')
+      effectiveRole = defaultRole === 'admin' ? 'admin,super_admin' : (defaultRole || 'team_member,mentor,team_head')
     } else if (effectiveRole === 'admin') {
       effectiveRole = 'admin,super_admin'
     }
@@ -66,7 +66,7 @@ export const MembersPage = ({ defaultRole }) => {
     if (role === 'admin') return { title: 'Admins', subtitle: 'configured administrator accounts' }
     if (role === 'mentor') return { title: 'Mentors', subtitle: 'program mentors & advisors' }
     if (role === 'team_head') return { title: 'Team Leaders', subtitle: 'team heads & supervisors' }
-    return { title: 'Team Members', subtitle: 'professional staff members' }
+    return { title: 'Employees', subtitle: 'enrolled employees & staff members' }
   }
   const headerInfo = getHeaderInfo()
 
@@ -89,8 +89,10 @@ export const MembersPage = ({ defaultRole }) => {
             onChange={e => setSearch(e.target.value)} style={{ maxWidth: 260 }} />
           {!defaultRole && (
             <select className="input" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} style={{ maxWidth: 180 }}>
-              <option value="">All Members</option>
-              {['mentor', 'team_head'].map(r => <option key={r} value={r}>{r === 'team_head' ? 'TEAM LEADER' : r.toUpperCase()}</option>)}
+              <option value="">All Employees</option>
+              <option value="team_member">Employees</option>
+              <option value="mentor">Mentors</option>
+              <option value="team_head">Team Leaders</option>
             </select>
           )}
         </div>
@@ -202,10 +204,8 @@ export const MembersPage = ({ defaultRole }) => {
             <div>
                 <label className="section-label">Update Role / Position</label>
                 <select className="input" value={newRole} onChange={e => setNewRole(e.target.value)}>
-                    <option value="admin">Admin</option>
-                    <option value="mentor">Mentor</option>
-                    <option value="team_head">Team Leader</option>
-                    <option value="intern">Intern (Demote)</option>
+                    <option value="intern">Intern</option>
+                    <option value="team_member">Employee</option>
                 </select>
                 <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10, lineHeight: 1.5 }}>
                     Changing a user's role will immediately update their access permissions across the portal.

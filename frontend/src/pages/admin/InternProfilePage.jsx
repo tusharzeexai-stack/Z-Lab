@@ -58,7 +58,7 @@ export const InternProfilePage = () => {
   const [conversionForm, setConversionForm] = useState({ 
     team_id: '', 
     role: 'team_member', 
-    email_subject: '🚀 Welcome to the team! Your account for ZLabs is ready',
+    email_subject: 'Welcome to the team! Your account for ZLabs is ready',
     email_body: 'Dear [[NAME]],\n\nCongratulations! Based on your excellent performance, you have been converted to a [[ROLE]].\n\nYour internal portal account has been created.\n\nYour login credentials:\nUsername: [[USERNAME]]\nPassword: [[PASSWORD]]\n\nLogin here: [[LOGIN_URL]]\n\nBest regards,\nZLabs Team'
   })
   const [conversionResult, setConversionResult] = useState(null)
@@ -225,6 +225,21 @@ export const InternProfilePage = () => {
       toast.error('Failed to update round')
     } finally {
       setActing(false)
+    }
+  }
+
+  const [migrating, setMigrating] = useState(false)
+  const handleMigrateToZHajirii = async () => {
+    const name = intern.full_name || 'intern'
+    if (!window.confirm(`Migrate ${name} details to Z-Hajirii attendance portal (z-hajirii.vercel.app)?`)) return
+    setMigrating(true)
+    try {
+      await internshipApi.migrateToZHajirii(id, 'http://43.204.218.180:3001')
+      toast.success(`Intern ${name} successfully migrated to Z-Hajirii portal!`)
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to migrate to Z-Hajirii portal')
+    } finally {
+      setMigrating(false)
     }
   }
 
@@ -543,9 +558,37 @@ export const InternProfilePage = () => {
             )}
 
 
+            {/* Z-HAJIRII MIGRATION CARD */}
+            {['super_admin', 'admin', 'mentor', 'team_member', 'team_head'].includes(role) && (
+                <div className="card card-sm" style={{ border: '1px solid #2563eb', background: 'rgba(37, 99, 235, 0.05)', marginTop: -8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 8, background: '#2563eb', color: 'white' }}>
+                            <ExternalLink size={18} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div className="section-label" style={{ color: '#2563eb', marginBottom: 2 }}>Z-HAJIRII PORTAL</div>
+                            <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700 }}>Migrate Attendance Record</h4>
+                        </div>
+                    </div>
+                    <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '0 0 12px', lineHeight: 1.4 }}>
+                        Sync intern details directly to <strong>z-hajirii.vercel.app</strong> attendance system.
+                    </p>
+                    <button 
+                        className="btn btn-primary w-full" 
+                        style={{ height: 36, fontSize: 12, fontWeight: 600, background: '#2563eb', borderColor: '#2563eb', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                        onClick={handleMigrateToZHajirii} 
+                        disabled={migrating}
+                    >
+                        <ExternalLink size={14} /> {migrating ? 'Migrating Data...' : 'Migrate to Z-Hajirii'}
+                    </button>
+                </div>
+            )}
+
             {intern.converted_at && (
                 <div className="card card-sm" style={{ background: 'var(--bg-raised)' }}>
-                    <div className="section-label">✅ Converted to {intern.user?.profile?.role === 'team_head' ? 'Team Head' : 'Member'}</div>
+                    <div className="section-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <CheckCircle2 size={14} color="var(--green)" /> Converted to {intern.user?.profile?.role === 'team_head' ? 'Team Head' : 'Member'}
+                    </div>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '8px 0 0' }}>
                         Promoted on {new Date(intern.converted_at).toLocaleDateString()}
                     </p>

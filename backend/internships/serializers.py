@@ -7,16 +7,18 @@ from users.serializers import UserSerializer
 class OpenPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = OpenPosition
-        fields = ['id', 'role', 'title', 'description', 'requirements', 'duration', 'is_open', 'created_at']
+        fields = ['id', 'role', 'position_type', 'title', 'description', 'requirements', 'duration', 'is_open', 'created_at']
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
     role_applied_for_display = serializers.CharField(source='get_role_applied_for_display', read_only=True)
+    app_type_display = serializers.CharField(source='get_app_type_display', read_only=True)
 
     class Meta:
         model = Application
         fields = [
-            'id', 'name', 'email', 'phone', 'role_applied_for', 'role_applied_for_display',
+            'id', 'name', 'email', 'phone', 'app_type', 'app_type_display',
+            'role_applied_for', 'role_applied_for_display',
             'skills', 'cover_letter', 'resume',
             'status', 'applied_at', 'reviewed_at', 'rejection_reason'
         ]

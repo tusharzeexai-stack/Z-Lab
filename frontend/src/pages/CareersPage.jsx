@@ -47,6 +47,9 @@ export const CareersPage = () => {
 
   const handleApplyClick = (pos) => {
     setSelectedRole(pos)
+    if (pos?.position_type) {
+      setForm(f => ({ ...f, app_type: pos.position_type }))
+    }
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
   }
 
@@ -266,6 +269,17 @@ export const CareersPage = () => {
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Phone Number</label>
                       <input style={{ width: '100%', padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', outline: 'none' }} type="tel" placeholder="+91 12345 67890" value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} required />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Applying As</label>
+                      <select 
+                        style={{ width: '100%', padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', outline: 'none' }}
+                        value={form.app_type || 'internship'} 
+                        onChange={e => setForm(f => ({...f, app_type: e.target.value}))}
+                      >
+                        <option value="internship" style={{ background: '#101c44', color: '#fff' }}>Internship</option>
+                        <option value="employee" style={{ background: '#101c44', color: '#fff' }}>Full-Time Job (Employee)</option>
+                      </select>
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, color: '#fff' }}>Core Skills</label>

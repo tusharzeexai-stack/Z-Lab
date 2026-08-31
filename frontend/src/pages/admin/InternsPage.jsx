@@ -5,13 +5,14 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { internshipApi } from '../../api'
 import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ExternalLink } from 'lucide-react'
 
 export const InternsPage = () => {
   const navigate = useNavigate()
   const { role } = useAuth()
   const [interns, setInterns] = useState([])
   const [loading, setLoading] = useState(true)
+  const [migratingId, setMigratingId] = useState(null)
 
   const load = () => {
     setLoading(true)
@@ -38,6 +39,21 @@ export const InternsPage = () => {
     }
   }
 
+  const handleMigrate = async (intern, e) => {
+    e.stopPropagation()
+    const name = intern.user ? `${intern.user.first_name} ${intern.user.last_name}` : (intern.application?.name || 'Intern')
+    if (!window.confirm(`Migrate ${name} to Z-Hajirii attendance portal (z-hajirii.vercel.app)?`)) return
+    setMigratingId(intern.id)
+    try {
+      await internshipApi.migrateToZHajirii(intern.id, 'http://43.204.218.180:3001')
+      toast.success(`Migrated ${name} to Z-Hajirii attendance portal!`)
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Migration failed')
+    } finally {
+      setMigratingId(null)
+    }
+  }
+
   return (
     <Layout>
       <TopBar 
@@ -45,9 +61,11 @@ export const InternsPage = () => {
         subtitle={`${interns.length} active interns registered`} 
         actions={
           role !== 'intern' && (
-            <button onClick={() => navigate('/admin/enroll')} className="btn btn-primary btn-sm">
-              + Enroll Intern
-            </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => navigate('/admin/enroll')} className="btn btn-primary btn-sm">
+                + Enroll Intern
+              </button>
+            </div>
           )
         }
       />
@@ -67,9 +85,9 @@ export const InternsPage = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>Loading records...</td></tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>Loading records...</td></tr>
               ) : interns.length === 0 ? (
-                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>No interns found.</td></tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>No interns found.</td></tr>
               ) : interns.map(intern => {
                 const pct = intern.tasks_count > 0 ? Math.round((intern.completed_tasks / intern.tasks_count) * 100) : 0
                 return (
@@ -125,6 +143,16 @@ export const InternsPage = () => {
                         <button className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => handleRowClick(intern.id)}>
                             View Profile <ArrowRight size={14} />
                         </button>
+                        {['admin', 'super_admin'].includes(role) && (
+                          <button 
+                            className="btn btn-outline btn-sm" 
+                            style={{ color: '#2563eb', borderColor: '#2563eb', fontSize: 11, padding: '4px 8px', height: 28, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                            onClick={(e) => handleMigrate(intern, e)}
+                            title="Migrate intern to z-hajirii.vercel.app attendance portal"
+                          >
+                            <ExternalLink size={12} /> {migratingId === intern.id ? 'Migrating...' : 'Migrate'}
+                          </button>
+                        )}
                         {role === 'mentor' && !intern.converted_at && (
                           <button 
                             className="btn btn-primary btn-sm" 

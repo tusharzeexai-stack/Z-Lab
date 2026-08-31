@@ -78,6 +78,10 @@ class ApplicationListView(generics.ListAPIView):
             # Default to only pending applicants
             qs = qs.filter(status='pending')
             
+        app_type_filter = self.request.query_params.get('app_type')
+        if app_type_filter:
+            qs = qs.filter(app_type=app_type_filter)
+
         role_filter = self.request.query_params.get('role')
         if role_filter:
             qs = qs.filter(role_applied_for=role_filter)
@@ -111,7 +115,7 @@ class ApplicationAcceptView(APIView):
             except User.DoesNotExist:
                 pass
 
-        # 3. Create User account for the intern
+        # 3. Create User account based on application app_type
         password = generate_password()
         username = application.email.split('@')[0].lower().replace('.', '_')
         base_username = username
@@ -129,15 +133,19 @@ class ApplicationAcceptView(APIView):
         user.set_password(password)
         user.save()
         
-        UserProfile.objects.create(user=user, role='intern', phone=application.phone, temp_password=password)
+        user_role = 'team_member' if application.app_type == 'employee' else 'intern'
+        UserProfile.objects.create(user=user, role=user_role, phone=application.phone, temp_password=password)
 
-        # 4. Create intern profile linked to user
-        intern_profile = InternProfile.objects.create(
-            user=user,
-            application=application,
-            mentor=mentor,
-            domain=application.role_applied_for
-        )
+        # 4. Create intern profile if internship
+        intern_profile_id = None
+        if application.app_type == 'internship':
+            intern_profile = InternProfile.objects.create(
+                user=user,
+                application=application,
+                mentor=mentor,
+                domain=application.role_applied_for
+            )
+            intern_profile_id = intern_profile.id
 
         # 5. Send welcome email with credentials
         from django.conf import settings
@@ -155,12 +163,12 @@ class ApplicationAcceptView(APIView):
         log_activity(
             user=request.user,
             action_type='application_accepted',
-            description=f'Application from {application.name} accepted. User {username} created.',
+            description=f'Application from {application.name} ({application.get_app_type_display()}) accepted. User {username} created.',
         )
 
         return Response({
-            'message': 'Application accepted. Intern account created.',
-            'intern_id': intern_profile.id,
+            'message': f'Application accepted. {"Employee" if application.app_type == "employee" else "Intern"} account created.',
+            'intern_id': intern_profile_id,
             'username': username,
             'password': password
         }, status=201)
@@ -476,3 +484,76 @@ class UpdateInternRoundView(APIView):
         )
 
         return Response({'message': f'Round successfully updated to {new_round}.', 'current_round': new_round})
+
+
+import urllib.request
+import json
+
+class MigrateToZHajiriiView(APIView):
+    permission_classes = [IsAdminRole]
+
+    def post(self, request, pk):
+        try:
+            intern = InternProfile.objects.select_related('user', 'application').get(pk=pk)
+        except InternProfile.DoesNotExist:
+            return Response({'error': 'Intern not found.'}, status=404)
+
+        name = intern.full_name or "Intern"
+        email = intern.application.email if intern.application else (intern.user.email if intern.user else "")
+        phone = intern.application.phone if intern.application else ""
+        domain = intern.domain or "Online Intern"
+        username = email.split('@')[0].lower() if email else f"intern_{intern.id}"
+        emp_id = f"ZH-INT-{intern.id:04d}"
+
+        target_url = request.data.get('target_url', 'http://43.204.218.180:3001')
+
+        zhajirii_user = {
+            "id": f"zh-int-{intern.id}",
+            "username": username,
+            "password_hash": "$2a$10$e8w.K2O8sF/K8/Gk4R4H2.f8XJ0X0zW7W7W7W7W7W7W7W",
+            "full_name": name,
+            "email": email,
+            "employee_id": emp_id,
+            "department": "Internship",
+            "designation": domain,
+            "phone_number": phone,
+            "joining_date": timezone.now().strftime("%Y-%m-%d"),
+            "role": "intern",
+            "status": "active",
+            "intern_type": "Online Intern",
+            "manager_id": None
+        }
+
+        zhajirii_employee = {
+            "id": f"zh-int-{intern.id}",
+            "name": name,
+            "role": domain,
+            "email": email,
+            "avatar_url": "",
+            "emp_id": emp_id,
+            "active_now": True
+        }
+
+        results = {}
+        for endpoint, payload in [('/users', zhajirii_user), ('/employees', zhajirii_employee)]:
+            try:
+                url = f"{target_url.rstrip('/')}{endpoint}"
+                data = json.dumps(payload).encode('utf-8')
+                req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    results[endpoint] = json.loads(response.read().decode('utf-8'))
+            except Exception as e:
+                results[endpoint] = {'error': str(e)}
+
+        log_activity(
+            user=request.user,
+            action_type='intern_migrated_zhajirii',
+            description=f'Intern {name} migrated to Z-Hajirii portal ({target_url})',
+        )
+
+        return Response({
+            'message': f'Intern {name} details migrated to Z-Hajirii.',
+            'emp_id': emp_id,
+            'details': results
+        })
+

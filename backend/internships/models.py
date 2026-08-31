@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 
 
 class OpenPosition(models.Model):
+    POSITION_TYPE_CHOICES = [
+        ('internship', 'Internship'),
+        ('employee', 'Full-Time Job'),
+    ]
     ROLE_CHOICES = [
         ('aiml_intern', 'AI/ML Intern'),
         ('bde_intern', 'Business Development Intern'),
@@ -12,8 +16,15 @@ class OpenPosition(models.Model):
         ('data_intern', 'Data Analyst Intern'),
         ('content_intern', 'Content Writing Intern'),
         ('hr_intern', 'HR Intern'),
+        ('full_stack_dev', 'Full Stack Developer'),
+        ('backend_dev', 'Backend Engineer'),
+        ('frontend_dev', 'Frontend Developer'),
+        ('ui_ux_designer', 'UI/UX Designer'),
+        ('hr_manager', 'HR Executive / Manager'),
+        ('marketing_manager', 'Growth & Marketing Lead'),
     ]
     role = models.CharField(max_length=50, choices=ROLE_CHOICES, unique=True)
+    position_type = models.CharField(max_length=20, choices=POSITION_TYPE_CHOICES, default='internship')
     title = models.CharField(max_length=200)
     description = models.TextField()
     requirements = models.TextField(blank=True)
@@ -22,7 +33,7 @@ class OpenPosition(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.title} ({self.get_position_type_display()})'
 
     class Meta:
         ordering = ['role']
@@ -34,6 +45,10 @@ class Application(models.Model):
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
     ]
+    APP_TYPE_CHOICES = [
+        ('internship', 'Internship'),
+        ('employee', 'Full-Time Job'),
+    ]
 
     ROLE_CHOICES = [
         ('aiml_intern', 'AI/ML Intern'),
@@ -44,14 +59,21 @@ class Application(models.Model):
         ('data_intern', 'Data Analyst Intern'),
         ('content_intern', 'Content Writing Intern'),
         ('hr_intern', 'HR Intern'),
+        ('full_stack_dev', 'Full Stack Developer'),
+        ('backend_dev', 'Backend Engineer'),
+        ('frontend_dev', 'Frontend Developer'),
+        ('ui_ux_designer', 'UI/UX Designer'),
+        ('hr_manager', 'HR Executive / Manager'),
+        ('marketing_manager', 'Growth & Marketing Lead'),
     ]
 
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
+    app_type = models.CharField(max_length=20, choices=APP_TYPE_CHOICES, default='internship')
     role_applied_for = models.CharField(
         max_length=50, choices=ROLE_CHOICES, default='dev_intern',
-        help_text='Internship role the applicant is applying for'
+        help_text='Role the applicant is applying for'
     )
     skills = models.TextField(blank=True, help_text='Comma-separated skills')
     cover_letter = models.TextField(blank=True, help_text='Why do you want this role?')

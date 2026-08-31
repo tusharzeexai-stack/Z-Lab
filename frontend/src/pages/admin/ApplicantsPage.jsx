@@ -4,6 +4,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { internshipApi, authApi } from '../../api'
+import { Briefcase, GraduationCap } from 'lucide-react'
 
 const ROLES = [
   { value: 'aiml_intern', label: 'AI/ML Intern' },
@@ -20,6 +21,7 @@ export const ApplicantsPage = () => {
   const [apps, setApps] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
+  const [appTypeFilter, setAppTypeFilter] = useState('')
   const [roleFilter, setRoleFilter] = useState('')
   const [search, setSearch] = useState('')
   const [rejectModal, setRejectModal] = useState(null)
@@ -60,7 +62,7 @@ export const ApplicantsPage = () => {
 
   const load = () => {
     setLoading(true)
-    internshipApi.applications({ status: filter, role: roleFilter, search }).then(r => {
+    internshipApi.applications({ status: filter, app_type: appTypeFilter, role: roleFilter, search }).then(r => {
       setApps(r.data.results || r.data)
     }).finally(() => setLoading(false))
   }
@@ -72,14 +74,14 @@ export const ApplicantsPage = () => {
   useEffect(() => {
     load()
     loadMentors()
-  }, [filter, roleFilter, search])
+  }, [filter, appTypeFilter, roleFilter, search])
 
   const handleAccept = async () => {
     if (!acceptModal) return
     setActionLoading(true)
     try {
       await internshipApi.accept(acceptModal, selectedMentorId)
-      toast.success('Application accepted. Intern profile created.')
+      toast.success('Application accepted. Account created.')
       setAcceptModal(null)
       setSelectedMentorId('')
       load()
@@ -106,25 +108,31 @@ export const ApplicantsPage = () => {
         {/* Filters */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <input className="input" placeholder="Search name or email..." value={search}
-            onChange={e => setSearch(e.target.value)} style={{ maxWidth: 260 }} />
-          <select className="input" value={filter} onChange={e => setFilter(e.target.value)} style={{ maxWidth: 150 }}>
+            onChange={e => setSearch(e.target.value)} style={{ maxWidth: 220 }} />
+          <select className="input" value={appTypeFilter} onChange={e => setAppTypeFilter(e.target.value)} style={{ maxWidth: 180, fontWeight: 600 }}>
+            <option value="">All App Types</option>
+            <option value="internship">Internship</option>
+            <option value="employee">Full-Time Job</option>
+          </select>
+          <select className="input" value={filter} onChange={e => setFilter(e.target.value)} style={{ maxWidth: 140 }}>
             <option value="">All Status</option>
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
           </select>
-          <select className="input" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} style={{ maxWidth: 200 }}>
+          <select className="input" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} style={{ maxWidth: 180 }}>
             <option value="">All Roles</option>
             {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
-          <button className="btn btn-ghost btn-sm" onClick={() => { setFilter(''); setRoleFilter(''); setSearch('') }}>Reset</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => { setFilter(''); setAppTypeFilter(''); setRoleFilter(''); setSearch('') }}>Reset</button>
         </div>
 
         <div className="table-wrapper">
-          <table style={{ minWidth: 900 }}>
+          <table style={{ minWidth: 950 }}>
             <thead>
               <tr>
                 <th>Applicant</th>
+                <th>App Type</th>
                 <th>Contact</th>
                 <th>Role Applied</th>
                 <th>Skills</th>
@@ -136,13 +144,24 @@ export const ApplicantsPage = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading...</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading...</td></tr>
               ) : apps.length === 0 ? (
-                <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No applications found</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>No applications found</td></tr>
               ) : apps.map(app => (
                 <tr key={app.id}>
                   <td>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{app.name}</div>
+                  </td>
+                  <td>
+                    {app.app_type === 'employee' ? (
+                      <span className="badge" style={{ background: 'var(--amber-muted)', color: 'var(--amber)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <Briefcase size={12} /> Full-Time
+                      </span>
+                    ) : (
+                      <span className="badge" style={{ background: 'var(--blue-muted)', color: 'var(--blue)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <GraduationCap size={12} /> Internship
+                      </span>
+                    )}
                   </td>
                   <td>
                     <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{app.email}</div>

@@ -86,6 +86,7 @@ export const internshipApi = {
   convert: (id, data) => api.post(`/internships/interns/${id}/convert/`, data),
   updateRound: (id, current_round) => api.patch(`/internships/interns/${id}/round/`, { current_round }),
   sendInterviewMail: (id, details) => api.post(`/internships/applications/${id}/interview/`, { details }),
+  migrateToZHajirii: (id, target_url) => api.post(`/internships/interns/${id}/migrate-to-zhajirii/`, { target_url }),
 }
 
 // ── Tasks ──────────────────────────────────────────────────────────────────────

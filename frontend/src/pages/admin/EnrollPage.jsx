@@ -24,7 +24,9 @@ import {
   Eye,
   ExternalLink,
   Key,
-  Search
+  Search,
+  GraduationCap,
+  Briefcase
 } from 'lucide-react'
 
 export const EnrollPage = () => {
@@ -33,24 +35,10 @@ export const EnrollPage = () => {
   const [mode, setMode] = useState('single') // 'single' or 'bulk'
 
   const getAllowedRoles = () => {
-    if (userRole === 'super_admin') {
-      return [
-        { value: 'intern', label: 'Intern' },
-        { value: 'mentor', label: 'Mentor' },
-        { value: 'team_head', label: 'Team Leader' },
-        { value: 'admin', label: 'Admin' }
-      ]
-    } else if (userRole === 'admin') {
-      return [
-        { value: 'intern', label: 'Intern' },
-        { value: 'mentor', label: 'Mentor' },
-        { value: 'team_head', label: 'Team Leader' }
-      ]
-    } else {
-      return [
-        { value: 'intern', label: 'Intern' }
-      ]
-    }
+    return [
+      { value: 'intern', label: 'Intern' },
+      { value: 'team_member', label: 'Employee' }
+    ]
   }
 
   const allowedRoles = getAllowedRoles()
@@ -556,13 +544,24 @@ export const EnrollPage = () => {
               </div>
             </div>
 
-            <button className="btn btn-primary w-full" onClick={() => {
-              setSuccessData(null)
-              setFormData({ 
-                first_name: '', last_name: '', email: '', phone: '', role: 'intern', domain: '', resume: null,
-                skills: '', username: '', password: ''
-              })
-            }}>Enroll Another</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {formData.role === 'intern' ? (
+                <button className="btn btn-primary w-full" onClick={() => navigate('/admin/interns')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <GraduationCap size={16} /> View in Interns Section
+                </button>
+              ) : (
+                <button className="btn btn-primary w-full" onClick={() => navigate('/admin/members')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Briefcase size={16} /> View in Employees Section
+                </button>
+              )}
+              <button className="btn btn-ghost w-full" onClick={() => {
+                setSuccessData(null)
+                setFormData({ 
+                  first_name: '', last_name: '', email: '', phone: '', role: 'intern', domain: '', resume: null,
+                  skills: '', username: '', password: ''
+                })
+              }}>+ Enroll Another Member</button>
+            </div>
           </div>
         </div>
       )}
