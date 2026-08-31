@@ -76,7 +76,7 @@ export const authApi = {
 // ── Internships ────────────────────────────────────────────────────────────────
 export const internshipApi = {
   // Public open positions
-  positions: (params) => axios.get('/api/internships/positions/', { params }),
+  positions: (params) => axios.get(`${API_BASE}/internships/positions/`, { params }),
   createPosition: (data) => api.post('/internships/positions/', data),
   updatePosition: (id, data) => api.patch(`/internships/positions/${id}/`, data),
   deletePosition: (id) => api.delete(`/internships/positions/${id}/`),
@@ -117,8 +117,8 @@ export const taskApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   // Public
-  getByToken: (token, params) => axios.get(`/api/tasks/submit/${token}/`, { params }),
-  submitByToken: (token, formData) => axios.post(`/api/tasks/submit/${token}/`, formData, {
+  getByToken: (token, params) => axios.get(`${API_BASE}/tasks/submit/${token}/`, { params }),
+  submitByToken: (token, formData) => axios.post(`${API_BASE}/tasks/submit/${token}/`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
 }
