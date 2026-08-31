@@ -514,12 +514,12 @@ class MigrateToZHajiriiView(APIView):
             "full_name": name,
             "email": email,
             "employee_id": emp_id,
-            "department": "Internship",
+            "department": "Z-Lab Hired",
             "designation": domain,
             "phone_number": phone,
             "joining_date": timezone.now().strftime("%Y-%m-%d"),
-            "role": "intern",
-            "status": "active",
+            "role": "Employee",
+            "status": "Active",
             "intern_type": "Online Intern",
             "manager_id": None
         }
