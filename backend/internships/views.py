@@ -535,6 +535,7 @@ class MigrateToZHajiriiView(APIView):
         }
 
         results = {}
+        errors = []
         for endpoint, payload in [('/users', zhajirii_user), ('/employees', zhajirii_employee)]:
             try:
                 url = f"{target_url.rstrip('/')}{endpoint}"
@@ -543,7 +544,15 @@ class MigrateToZHajiriiView(APIView):
                 with urllib.request.urlopen(req, timeout=5) as response:
                     results[endpoint] = json.loads(response.read().decode('utf-8'))
             except Exception as e:
-                results[endpoint] = {'error': str(e)}
+                err_msg = str(e)
+                results[endpoint] = {'error': err_msg}
+                errors.append(f"{endpoint}: {err_msg}")
+
+        if len(errors) > 0:
+            return Response({
+                'error': f'Failed to sync intern with Z-Hajirii at {target_url} ({", ".join(errors)}).',
+                'details': results
+            }, status=400)
 
         log_activity(
             user=request.user,
