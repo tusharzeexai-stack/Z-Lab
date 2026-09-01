@@ -209,19 +209,11 @@ export const ApplicantsPage = () => {
                   </td>
                   <td style={{ textAlign: 'center' }}><StatusBadge status={app.status} /></td>
                   <td>
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', minWidth: 220 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', minWidth: 200 }}>
                       {app.status === 'pending' && (
                         <>
                           <button className="btn btn-success btn-sm" onClick={() => handleDirectAccept(app.id)} disabled={actionLoading}>
                             Accept
-                          </button>
-                          <button 
-                            className="btn btn-sm" 
-                            onClick={() => handleWhatsAppInterview(app)} 
-                            style={{ background: '#25D366', color: '#fff', border: 'none', fontWeight: 600 }}
-                            title="Schedule Interview via WhatsApp"
-                          >
-                            Schedule Interview (WhatsApp)
                           </button>
                           <button className="btn btn-danger btn-sm" onClick={() => setRejectModal(app.id)} disabled={actionLoading}>
                             Reject
@@ -229,17 +221,14 @@ export const ApplicantsPage = () => {
                         </>
                       )}
                       {app.status === 'accepted' && (
-                        <>
-                          <button 
-                            className="btn btn-sm" 
-                            onClick={() => handleWhatsAppInterview(app)} 
-                            style={{ background: '#25D366', color: '#fff', border: 'none', fontWeight: 600 }}
-                            title="Schedule Interview via WhatsApp"
-                          >
-                            Schedule Interview (WhatsApp)
-                          </button>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>Intern Profile Created</span>
-                        </>
+                        <button 
+                          className="btn btn-sm" 
+                          onClick={() => handleWhatsAppInterview(app)} 
+                          style={{ background: '#25D366', color: '#fff', border: 'none', fontWeight: 600 }}
+                          title="Schedule Interview via WhatsApp"
+                        >
+                          Schedule Interview (WhatsApp)
+                        </button>
                       )}
                       {app.status === 'rejected' && (
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Application Closed</span>
