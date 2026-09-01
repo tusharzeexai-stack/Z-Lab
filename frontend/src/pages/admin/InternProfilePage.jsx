@@ -7,7 +7,7 @@ import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { safeList, getMediaUrl, authApi, internshipApi, taskApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
-import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon, ExternalLink } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Mail, Phone, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon, ExternalLink } from 'lucide-react'
 
 const TEMPLATES = [
   { id: 'custom', label: 'Custom (Write your own)', subject: '', body: '' },
@@ -456,6 +456,11 @@ export const InternProfilePage = () => {
                     <a href={`mailto:${intern.user ? intern.user.email : intern.application?.email}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Mail size={14} /> {intern.user ? intern.user.email : intern.application?.email}
                     </a>
+                    {(intern.application?.phone || intern.user?.profile?.phone) && (
+                        <a href={`tel:${intern.application?.phone || intern.user?.profile?.phone}`} className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Phone size={14} /> {intern.application?.phone || intern.user?.profile?.phone}
+                        </a>
+                    )}
                     {intern.application?.resume ? (
                         <a href={getMediaUrl(intern.application.resume)} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <FileText size={14} /> View Application Resume

@@ -112,6 +112,9 @@ export const InternsPage = () => {
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                         {intern.user ? intern.user.email : intern.application?.email}
+                        {(intern.application?.phone || intern.user?.profile?.phone) && (
+                          <span style={{ marginLeft: 6, opacity: 0.85, fontWeight: 500 }}>· {intern.application?.phone || intern.user?.profile?.phone}</span>
+                        )}
                       </div>
                     </td>
                     <td>
