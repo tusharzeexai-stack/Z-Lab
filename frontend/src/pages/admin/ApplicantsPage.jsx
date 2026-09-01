@@ -3,7 +3,7 @@ import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { safeList, internshipApi, authApi } from '../../api'
+import { safeList, getMediaUrl, internshipApi, authApi } from '../../api'
 import { Briefcase, GraduationCap } from 'lucide-react'
 
 const ROLES = [
@@ -179,7 +179,7 @@ export const ApplicantsPage = () => {
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     {app.resume ? (
-                      <a href={app.resume} target="_blank" rel="noreferrer"
+                      <a href={getMediaUrl(app.resume)} target="_blank" rel="noreferrer"
                         style={{ color: 'var(--blue)', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>PDF</a>
                     ) : '—'}
                   </td>

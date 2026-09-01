@@ -9,6 +9,29 @@ export const safeList = (data) => {
   return Array.isArray(raw) ? raw : []
 }
 
+// Formats media & resume URLs to ensure they include port 8000 or full API origin
+export const getMediaUrl = (url) => {
+  if (!url) return ''
+  if (typeof url !== 'string') return url
+  // Fix Django absolute URI generated without port 8000 (e.g. http://43.204.218.180/media/...)
+  if (url.includes('43.204.218.180/media/')) {
+    return url.replace('43.204.218.180/media/', '43.204.218.180:8000/media/')
+  }
+  // Fix relative /media/ paths
+  if (url.startsWith('/media/')) {
+    const apiBase = import.meta.env.VITE_API_URL || ''
+    if (apiBase.startsWith('http')) {
+      try {
+        const origin = new URL(apiBase).origin
+        return `${origin}${url}`
+      } catch (e) {
+        return url
+      }
+    }
+  }
+  return url
+}
+
 const api = axios.create({
   baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },

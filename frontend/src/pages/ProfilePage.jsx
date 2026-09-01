@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Layout, TopBar } from '../components/Layout'
 import { useAuth } from '../contexts/AuthContext'
-import { authApi } from '../api'
+import { authApi, getMediaUrl } from '../api'
 import { toast } from '../components/Toast'
 import { User, MapPin, Phone, Mail, Save, Camera, Shield, FileText } from 'lucide-react'
 
@@ -163,7 +163,7 @@ export const ProfilePage = () => {
                     {currentUser?.profile?.resume ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <a 
-                          href={currentUser.profile.resume} 
+                          href={getMediaUrl(currentUser.profile.resume)} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="btn btn-ghost btn-sm"

@@ -5,7 +5,7 @@ import { StatusBadge } from '../../components/StatusBadge'
 import { FileUpload } from '../../components/FileUpload'
 import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
-import { safeList, authApi, internshipApi, taskApi, teamApi } from '../../api'
+import { safeList, getMediaUrl, authApi, internshipApi, taskApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon } from 'lucide-react'
 
@@ -465,11 +465,11 @@ export const InternProfilePage = () => {
                         <Mail size={14} /> {intern.user ? intern.user.email : intern.application?.email}
                     </a>
                     {intern.application?.resume ? (
-                        <a href={intern.application.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <a href={getMediaUrl(intern.application.resume)} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <FileText size={14} /> View Application Resume
                         </a>
                     ) : intern.user?.profile?.resume ? (
-                        <a href={intern.user.profile.resume} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <a href={getMediaUrl(intern.user.profile.resume)} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{ justifyContent: 'start', display: 'flex', alignItems: 'center', gap: 8 }}>
                             <FileText size={14} /> View Enrollment Resume
                         </a>
                     ) : (

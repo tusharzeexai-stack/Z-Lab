@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
-import { authApi } from '../../api'
+import { authApi, getMediaUrl } from '../../api'
 import { toast } from '../../components/Toast'
 import { useAuth } from '../../contexts/AuthContext'
 import { 
@@ -486,7 +486,7 @@ export const EnrollPage = () => {
                         <td style={{ padding: '16px 32px', textAlign: 'right' }}>
                           {user.profile?.resume ? (
                             <a 
-                              href={user.profile.resume} 
+                              href={getMediaUrl(user.profile.resume)} 
                               target="_blank" 
                               rel="noopener noreferrer" 
                               className="btn btn-ghost btn-sm"

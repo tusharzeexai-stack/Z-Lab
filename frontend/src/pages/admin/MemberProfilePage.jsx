@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge, RoleBadge } from '../../components/StatusBadge'
 import { toast } from '../../components/Toast'
-import { authApi } from '../../api'
+import { authApi, getMediaUrl } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { 
   ArrowLeft, 
@@ -204,7 +204,7 @@ export const MemberProfilePage = () => {
                   <Mail size={14} /> Send Email
                 </a>
                 {member.profile?.resume && (
-                  <a href={member.profile.resume} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', width: '100%', color: 'var(--blue)' }}>
+                  <a href={getMediaUrl(member.profile.resume)} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ justifyContent: 'start', width: '100%', color: 'var(--blue)' }}>
                     <Briefcase size={14} /> View Resume
                   </a>
                 )}
