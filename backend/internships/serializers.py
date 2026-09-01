@@ -11,8 +11,13 @@ class OpenPositionSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    role_applied_for_display = serializers.CharField(source='get_role_applied_for_display', read_only=True)
+    role_applied_for_display = serializers.SerializerMethodField()
     app_type_display = serializers.CharField(source='get_app_type_display', read_only=True)
+
+    def get_role_applied_for_display(self, obj):
+        if not obj.role_applied_for:
+            return 'General'
+        return obj.role_applied_for.replace('_', ' ').title()
 
     class Meta:
         model = Application

@@ -114,6 +114,7 @@ export const LandingPage = () => {
     Object.entries(form).forEach(([k, v]) => fd.append(k, v))
     fd.append('resume', resume)
     fd.append('role_applied_for', selectedRole?.role || 'dev_intern')
+    fd.append('app_type', selectedRole?.position_type || 'internship')
     try {
       await internshipApi.apply(fd)
       setSubmitted(true)
@@ -435,7 +436,9 @@ export const LandingPage = () => {
                         <div className="lp-pos-card__icon-box">
                           <Icon size={18} />
                         </div>
-                        <span className="lp-pos-card__tag">Technology</span>
+                        <span className="lp-pos-card__tag">
+                          {pos.position_type === 'employee' ? 'Full-Time Job' : 'Internship'}
+                        </span>
                       </div>
                       <h3 className="lp-pos-card__title">{pos.title}</h3>
                       <div className="lp-pos-card__meta">
@@ -445,7 +448,7 @@ export const LandingPage = () => {
                         </div>
                         <div className="lp-pos-card__meta-item">
                           <Clock size={14} />
-                          <span>Full-time</span>
+                          <span>{pos.duration || '3 months'}</span>
                         </div>
                       </div>
                     </div>
