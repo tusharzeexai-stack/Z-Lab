@@ -261,7 +261,7 @@ class InternListView(generics.ListAPIView):
         return qs
 
 
-class InternDetailView(generics.RetrieveUpdateAPIView):
+class InternDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminOrMentor]
     serializer_class = InternProfileSerializer
     queryset = InternProfile.objects.select_related('user', 'mentor', 'application').all()
@@ -553,6 +553,9 @@ class MigrateToZHajiriiView(APIView):
                 'error': f'Failed to sync intern with Z-Hajirii at {target_url} ({", ".join(errors)}).',
                 'details': results
             }, status=400)
+
+        intern.migrated_at = timezone.now()
+        intern.save(update_fields=['migrated_at'])
 
         log_activity(
             user=request.user,

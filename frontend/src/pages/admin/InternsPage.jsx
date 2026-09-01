@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, TopBar } from '../../components/Layout'
 import { StatusBadge } from '../../components/StatusBadge'
@@ -42,15 +42,29 @@ export const InternsPage = () => {
   const handleMigrate = async (intern, e) => {
     e.stopPropagation()
     const name = intern.user ? `${intern.user.first_name} ${intern.user.last_name}` : (intern.application?.name || 'Intern')
-    if (!window.confirm(`Migrate ${name} to Z-Hajirii attendance portal (z-hajirii.vercel.app)?`)) return
+    if (!window.confirm(`Migrate ${name} to Z-Hajirii attendance portal?`)) return
     setMigratingId(intern.id)
     try {
       await internshipApi.migrateToZHajirii(intern.id, 'http://43.204.218.180:3001')
       toast.success(`Migrated ${name} to Z-Hajirii attendance portal!`)
+      load()
     } catch (err) {
       toast.error(err.response?.data?.error || 'Migration failed')
     } finally {
       setMigratingId(null)
+    }
+  }
+
+  const handleDeleteIntern = async (intern, e) => {
+    e.stopPropagation()
+    const name = intern.user ? `${intern.user.first_name} ${intern.user.last_name}` : (intern.application?.name || 'Intern')
+    if (!window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return
+    try {
+      await internshipApi.deleteIntern(intern.id)
+      toast.success(`Deleted ${name} successfully!`)
+      load()
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to delete intern')
     }
   }
 
@@ -139,18 +153,39 @@ export const InternsPage = () => {
                       )}
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <button className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => handleRowClick(intern.id)}>
-                            View Profile <ArrowRight size={14} />
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', height: 28 }} onClick={() => handleRowClick(intern.id)}>
+                            View Profile <ArrowRight size={12} />
                         </button>
                         {['admin', 'super_admin'].includes(role) && (
+                          intern.migrated_at ? (
+                            <button 
+                              disabled 
+                              className="btn btn-ghost btn-sm" 
+                              style={{ opacity: 0.9, color: '#16a34a', background: '#dcfce7', border: '1px solid #bbf7d0', fontSize: 11, padding: '4px 8px', height: 28, display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700, cursor: 'default' }}
+                            >
+                              ✓ Migrated
+                            </button>
+                          ) : (
+                            <button 
+                              className="btn btn-outline btn-sm" 
+                              style={{ color: '#2563eb', borderColor: '#2563eb', fontSize: 11, padding: '4px 8px', height: 28, display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                              onClick={(e) => handleMigrate(intern, e)}
+                              disabled={migratingId === intern.id}
+                              title="Migrate intern to Z-Hajirii attendance portal"
+                            >
+                              <ExternalLink size={12} /> {migratingId === intern.id ? 'Migrating...' : 'Migrate'}
+                            </button>
+                          )
+                        )}
+                        {['admin', 'super_admin'].includes(role) && (
                           <button 
-                            className="btn btn-outline btn-sm" 
-                            style={{ color: '#2563eb', borderColor: '#2563eb', fontSize: 11, padding: '4px 8px', height: 28, display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                            onClick={(e) => handleMigrate(intern, e)}
-                            title="Migrate intern to z-hajirii.vercel.app attendance portal"
+                            className="btn btn-danger btn-sm" 
+                            style={{ fontSize: 11, padding: '4px 8px', height: 28 }}
+                            onClick={(e) => handleDeleteIntern(intern, e)}
+                            title="Delete intern record"
                           >
-                            <ExternalLink size={12} /> {migratingId === intern.id ? 'Migrating...' : 'Migrate'}
+                            Delete
                           </button>
                         )}
                         {role === 'mentor' && !intern.converted_at && (
@@ -159,7 +194,7 @@ export const InternsPage = () => {
                             style={{ background: 'var(--green)', borderColor: 'var(--green)', fontSize: 11, padding: '4px 10px', height: 28 }}
                             onClick={() => handlePromoteToTeamLeader(intern.id)}
                           >
-                            Promote to Team Leader
+                            Promote
                           </button>
                         )}
                       </div>

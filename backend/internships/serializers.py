@@ -47,7 +47,7 @@ class InternProfileSerializer(serializers.ModelSerializer):
         model = InternProfile
         fields = [
             'id', 'user', 'application', 'mentor', 'mentor_id',
-            'is_ready_for_team', 'ready_marked_at', 'converted_at',
+            'is_ready_for_team', 'ready_marked_at', 'converted_at', 'migrated_at',
             'domain', 'joined_at', 'current_round', 'tasks_count', 'completed_tasks'
         ]
 

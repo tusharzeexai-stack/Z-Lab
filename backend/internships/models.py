@@ -107,6 +107,7 @@ class InternProfile(models.Model):
     is_ready_for_team = models.BooleanField(default=False)
     ready_marked_at = models.DateTimeField(null=True, blank=True)
     converted_at = models.DateTimeField(null=True, blank=True)
+    migrated_at = models.DateTimeField(null=True, blank=True)
     domain = models.CharField(max_length=100, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
     current_round = models.IntegerField(default=1, help_text='Current active round (1-5)')
