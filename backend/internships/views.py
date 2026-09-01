@@ -267,6 +267,27 @@ class InternDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = InternProfile.objects.select_related('user', 'mentor', 'application').all()
 
 
+class InternDeleteView(APIView):
+    permission_classes = [IsAdminRole]
+
+    def post(self, request, pk):
+        try:
+            intern = InternProfile.objects.get(pk=pk)
+            name = intern.full_name
+            intern.delete()
+            log_activity(
+                user=request.user,
+                action_type='intern_deleted',
+                description=f'Intern {name} deleted',
+            )
+            return Response({'message': 'Intern deleted successfully.'})
+        except InternProfile.DoesNotExist:
+            return Response({'error': 'Intern not found.'}, status=404)
+
+    def delete(self, request, pk):
+        return self.post(request, pk)
+
+
 class AssignMentorView(APIView):
     permission_classes = [IsAdminRole]
 

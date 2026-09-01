@@ -3,7 +3,7 @@ from .views import (
     ApplicationCreateView, ApplicationListView,
     ApplicationAcceptView, ApplicationRejectView,
     ApplicationSendInterviewMailView,
-    InternListView, InternDetailView,
+    InternListView, InternDetailView, InternDeleteView,
     AssignMentorView, MarkReadyView, ConvertInternView, UpdateInternRoundView,
     OpenPositionListView, OpenPositionDetailView, MigrateToZHajiriiView,
 )
@@ -21,6 +21,7 @@ urlpatterns = [
     # Interns
     path('interns/', InternListView.as_view(), name='intern_list'),
     path('interns/<int:pk>/', InternDetailView.as_view(), name='intern_detail'),
+    path('interns/<int:pk>/delete/', InternDeleteView.as_view(), name='intern_delete'),
     path('interns/<int:pk>/assign-mentor/', AssignMentorView.as_view(), name='assign_mentor'),
     path('interns/<int:pk>/mark-ready/', MarkReadyView.as_view(), name='mark_ready'),
     path('interns/<int:pk>/convert/', ConvertInternView.as_view(), name='convert_intern'),
