@@ -7,7 +7,7 @@ import { Modal } from '../../components/Modal'
 import { toast } from '../../components/Toast'
 import { safeList, getMediaUrl, authApi, internshipApi, taskApi, teamApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
-import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Mail, FileText, Award, Briefcase, Info, Star, ArrowRight, Folder, CheckCircle2, MapPin, User as UserIcon, ExternalLink } from 'lucide-react'
 
 const TEMPLATES = [
   { id: 'custom', label: 'Custom (Write your own)', subject: '', body: '' },
