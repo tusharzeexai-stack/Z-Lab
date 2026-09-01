@@ -216,17 +216,18 @@
 
 /* RESPONSIVE */
 @media (max-width: 1100px) {
-  .lp-hero { grid-template-columns: 1fr; padding: 140px 40px 80px; text-align: center; }
+  .lp-hero { grid-template-columns: 1fr; padding: 130px 40px 60px; text-align: center; }
   .lp-hero__content { display: flex; flex-direction: column; align-items: center; }
-  .lp-hero__h1 { font-size: 54px; }
+  .lp-hero__h1 { font-size: 52px; }
   .lp-hero__p { max-width: 100%; }
-  .lp-statsbar__inner { grid-template-columns: repeat(2,1fr); }
-  .lp-steps__panel { grid-template-columns: 1fr; }
+  .lp-statsbar__inner { grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .lp-steps__panel { grid-template-columns: 1fr; gap: 40px; }
   .lp-features__grid { grid-template-columns: repeat(2,1fr); }
+  .lp-benefits__grid { grid-template-columns: repeat(2,1fr); }
   .lp-testi__grid { grid-template-columns: 1fr; }
   .lp-footer__main { grid-template-columns: 1fr 1fr; gap: 40px; }
-  .lp-cta__box { padding: 60px 40px; }
-  .lp-cta__box h2 { font-size: 40px; }
+  .lp-cta__box { padding: 60px 40px; border-radius: 32px; }
+  .lp-cta__box h2 { font-size: 38px; }
   
   /* Careers Page Overrides */
   .careers-grid { grid-template-columns: repeat(2, 1fr); }
@@ -240,36 +241,67 @@
   .lp-nav__actions .lp-btn--ghost { display: inline-flex; }
   
   .lp-nav__burger { display: flex; }
-  .lp-hero__h1 { font-size: 40px; }
+  .lp-hero { padding: 100px 16px 40px; gap: 36px; }
+  .lp-hero__h1 { font-size: 32px; margin-bottom: 18px; }
+  .lp-hero__p { font-size: 15px; margin-bottom: 28px; }
+  .lp-hero__cta { flex-direction: column; width: 100%; }
+  .lp-hero__cta .lp-btn { width: 100%; justify-content: center; }
   
+  /* Disable 3D tilt on mobile for pixel-perfect fit */
+  .lp-laptop__screen-outer, .lp-laptop__chin { transform: none !important; }
+
   /* Grid Fixes to prevent horizontal scrolling and squishing */
   .lp-features__grid { grid-template-columns: 1fr; }
   .lp-benefits__grid { grid-template-columns: 1fr; }
+  .lp-benefit-card { padding: 24px; border-radius: 16px; }
   
-  .lp-statsbar__inner { grid-template-columns: 1fr 1fr; }
-  .lp-footer__main { grid-template-columns: 1fr; }
-  .lp-section-head h2 { font-size: 34px; }
-  .lp-container { padding: 0 20px; }
+  .lp-statsbar { padding: 36px 20px; }
+  .lp-statsbar__inner { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .lp-statsbar__item strong { font-size: 32px; }
+  .lp-statsbar__item span { font-size: 11px; }
+
+  .lp-footer { padding: 60px 0 40px; }
+  .lp-footer__main { grid-template-columns: 1fr; gap: 32px; }
+  .lp-footer__bottom { flex-direction: column; gap: 16px; text-align: center; }
+  .lp-footer__legal { justify-content: center; }
+
+  .lp-section-head { margin-bottom: 40px; }
+  .lp-section-head h2 { font-size: 28px; }
+  .lp-section-head p { font-size: 15px; }
+  .lp-container { padding: 0 16px; }
   
+  .lp-steps { padding: 60px 0; }
+  .lp-steps__tabs { flex-direction: column; max-width: 100%; margin-bottom: 32px; }
+  .lp-phase-card { padding: 24px; border-radius: 16px; }
+  .lp-phase-card__title { font-size: 20px; margin-bottom: 20px; }
+
+  .lp-cta { padding: 60px 0; }
+  .lp-cta__box { padding: 40px 20px; border-radius: 24px; }
+  .lp-cta__box h2 { font-size: 28px; }
+  .lp-cta__box p { font-size: 15px; margin-bottom: 32px; }
+  .lp-cta__actions { flex-direction: column; width: 100%; }
+  .lp-cta__actions .lp-btn { width: 100%; justify-content: center; }
+
   /* Careers Page Overrides */
   .careers-grid { grid-template-columns: 1fr !important; }
   .perks-grid { grid-template-columns: 1fr !important; }
-  .careers-container { padding: 0 20px !important; }
-  .careers-h1 { font-size: 32px !important; }
+  .careers-container { padding: 0 16px !important; }
+  .careers-h1 { font-size: 30px !important; }
   
   /* Mobile Menu Open State */
   .lp-nav__links.open {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 80px;
+    position: fixed;
+    top: 72px;
     left: 0;
     right: 0;
-    background: #fff;
-    padding: 20px 40px;
+    background: #ffffff;
+    padding: 24px;
     border-bottom: 1px solid var(--border);
-    gap: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    gap: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    z-index: 999;
   }
 }
 
