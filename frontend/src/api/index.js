@@ -113,7 +113,11 @@ export const internshipApi = {
   reject: (id, reason) => api.post(`/internships/applications/${id}/reject/`, { reason }),
   interns: (params) => api.get('/internships/interns/', { params }),
   intern: (id) => api.get(`/internships/interns/${id}/`),
-  deleteIntern: async (id) => {
+  deleteIntern: async (target) => {
+    if (target?.user?.id) {
+      return await authApi.deleteUser(target.user.id)
+    }
+    const id = typeof target === 'object' ? target.id : target
     try {
       return await api.delete(`/internships/interns/${id}/`)
     } catch (err) {

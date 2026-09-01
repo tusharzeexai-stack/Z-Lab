@@ -60,7 +60,7 @@ export const InternsPage = () => {
     const name = intern.user ? `${intern.user.first_name} ${intern.user.last_name}` : (intern.application?.name || 'Intern')
     if (!window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return
     try {
-      await internshipApi.deleteIntern(intern.id)
+      await internshipApi.deleteIntern(intern)
       toast.success(`Deleted ${name} successfully!`)
       load()
     } catch (err) {
