@@ -113,7 +113,20 @@ export const internshipApi = {
   reject: (id, reason) => api.post(`/internships/applications/${id}/reject/`, { reason }),
   interns: (params) => api.get('/internships/interns/', { params }),
   intern: (id) => api.get(`/internships/interns/${id}/`),
-  deleteIntern: (id) => api.post(`/internships/interns/${id}/delete/`),
+  deleteIntern: async (id) => {
+    try {
+      return await api.delete(`/internships/interns/${id}/`)
+    } catch (err) {
+      if (err.response?.status === 405 || err.response?.status === 404) {
+        try {
+          return await api.post(`/internships/interns/${id}/delete/`)
+        } catch {
+          return await api.post(`/internships/interns/${id}/`)
+        }
+      }
+      throw err
+    }
+  },
   assignMentor: (id, mentor_id) => api.post(`/internships/interns/${id}/assign-mentor/`, { mentor_id }),
   markReady: (id) => api.post(`/internships/interns/${id}/mark-ready/`),
   convert: (id, data) => api.post(`/internships/interns/${id}/convert/`, data),

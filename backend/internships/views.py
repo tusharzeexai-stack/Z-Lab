@@ -266,6 +266,9 @@ class InternDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InternProfileSerializer
     queryset = InternProfile.objects.select_related('user', 'mentor', 'application').all()
 
+    def post(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
 
 class InternDeleteView(APIView):
     permission_classes = [IsAdminRole]
