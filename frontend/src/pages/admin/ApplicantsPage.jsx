@@ -76,18 +76,39 @@ export const ApplicantsPage = () => {
     loadMentors()
   }, [filter, appTypeFilter, roleFilter, search])
 
-  const handleAccept = async () => {
-    if (!acceptModal) return
+  const handleDirectAccept = async (appId) => {
     setActionLoading(true)
     try {
-      await internshipApi.accept(acceptModal, selectedMentorId)
-      toast.success('Application accepted. Account created.')
-      setAcceptModal(null)
-      setSelectedMentorId('')
+      await internshipApi.accept(appId, '')
+      toast.success('Application accepted! Account & Intern Profile created.')
       load()
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Failed')
+      toast.error(e.response?.data?.error || 'Failed to accept application.')
     } finally { setActionLoading(false) }
+  }
+
+  const handleWhatsAppInterview = (app) => {
+    const rawPhone = app.phone || ''
+    let cleanPhone = rawPhone.replace(/[^\d+]/g, '')
+    if (cleanPhone.startsWith('+')) {
+      cleanPhone = cleanPhone.substring(1)
+    } else if (cleanPhone.length === 10) {
+      cleanPhone = '91' + cleanPhone
+    }
+
+    if (!cleanPhone) {
+      toast.error('No phone number available for this applicant.')
+      return
+    }
+
+    const roleName = app.role_applied_for_display || app.role_applied_for?.replace(/_/g, ' ') || 'the position'
+    const message = `Hi ${app.name},\n\n` +
+      `Congratulations! Your application for ${roleName} at Z-Lab has been accepted.\n\n` +
+      `We would like to schedule an interview with you. Please let us know your availability for a quick call.\n\n` +
+      `Best regards,\nZ-Lab Recruitment Team`
+
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+    window.open(waUrl, '_blank')
   }
 
   const handleReject = async () => {
@@ -139,7 +160,7 @@ export const ApplicantsPage = () => {
                 <th style={{ textAlign: 'center' }}>Resume</th>
                 <th>Applied</th>
                 <th style={{ textAlign: 'center' }}>Status</th>
-                <th style={{ paddingLeft: 30 }}>Actions</th>
+                <th style={{ paddingLeft: 20 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -188,14 +209,19 @@ export const ApplicantsPage = () => {
                   </td>
                   <td style={{ textAlign: 'center' }}><StatusBadge status={app.status} /></td>
                   <td>
-                    <div style={{ display: 'flex', gap: 6, minWidth: 100 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', minWidth: 220 }}>
                       {app.status === 'pending' && (
                         <>
-                          <button className="btn btn-success btn-sm" onClick={() => setAcceptModal(app.id)} disabled={actionLoading}>
+                          <button className="btn btn-success btn-sm" onClick={() => handleDirectAccept(app.id)} disabled={actionLoading}>
                             Accept
                           </button>
-                          <button className="btn btn-ghost btn-sm" onClick={() => handleOpenInterviewModal(app)} disabled={actionLoading} style={{ color: 'var(--blue)' }}>
-                            Invite
+                          <button 
+                            className="btn btn-sm" 
+                            onClick={() => handleWhatsAppInterview(app)} 
+                            style={{ background: '#25D366', color: '#fff', border: 'none', fontWeight: 600 }}
+                            title="Schedule Interview via WhatsApp"
+                          >
+                            Schedule Interview (WhatsApp)
                           </button>
                           <button className="btn btn-danger btn-sm" onClick={() => setRejectModal(app.id)} disabled={actionLoading}>
                             Reject
@@ -203,7 +229,17 @@ export const ApplicantsPage = () => {
                         </>
                       )}
                       {app.status === 'accepted' && (
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Intern Profile Created</span>
+                        <>
+                          <button 
+                            className="btn btn-sm" 
+                            onClick={() => handleWhatsAppInterview(app)} 
+                            style={{ background: '#25D366', color: '#fff', border: 'none', fontWeight: 600 }}
+                            title="Schedule Interview via WhatsApp"
+                          >
+                            Schedule Interview (WhatsApp)
+                          </button>
+                          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>Intern Profile Created</span>
+                        </>
                       )}
                       {app.status === 'rejected' && (
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Application Closed</span>
@@ -229,32 +265,6 @@ export const ApplicantsPage = () => {
         </div>
       </Modal>
 
-      <Modal open={!!acceptModal} onClose={() => setAcceptModal(null)} title="Accept Application">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>
-            Accept this application to create an intern profile. <strong>Note:</strong> A user account will be created immediately, and an email with login credentials will be sent to the intern.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Assign Mentor (Optional)</label>
-            <select
-              className="input"
-              value={selectedMentorId}
-              onChange={e => setSelectedMentorId(e.target.value)}
-            >
-              <option value="">No mentor assigned yet</option>
-              {mentors.map(m => (
-                <option key={m.id} value={m.id}>{m.first_name} {m.last_name} (@{m.username})</option>
-              ))}
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
-            <button className="btn btn-ghost" onClick={() => setAcceptModal(null)}>Cancel</button>
-            <button className="btn btn-success" onClick={handleAccept} disabled={actionLoading}>Confirm & Accept</button>
-          </div>
-        </div>
-      </Modal>
     </Layout>
   )
 }
