@@ -62,14 +62,16 @@ const testimonials = [
 ]
 
 const ROLE_ICONS = {
-  aiml_intern: Terminal,
-  bde_intern: Briefcase,
-  dev_intern: Code,
-  design_intern: Palette,
-  marketing_intern: Rocket,
-  data_intern: BarChart,
-  content_intern: FileText,
-  hr_intern: Users,
+  aiml_engineer: Terminal,
+  fullstack_dev: Code,
+  backend_engineer: Terminal,
+  computer_vision: Eye,
+  devops_cloud: Globe,
+  data_science: BarChart,
+  product_management: Target,
+  uiux_design: Palette,
+  business_dev: Briefcase,
+  social_media_content: Rocket,
 }
 
 export const LandingPage = () => {
@@ -441,6 +443,11 @@ export const LandingPage = () => {
                         </span>
                       </div>
                       <h3 className="lp-pos-card__title">{pos.title}</h3>
+                      {pos.requirements && (
+                        <div style={{ fontSize: 12, color: 'var(--slate)', margin: '6px 0 10px', lineHeight: 1.4, opacity: 0.9 }}>
+                          🛠️ {pos.requirements}
+                        </div>
+                      )}
                       <div className="lp-pos-card__meta">
                         <div className="lp-pos-card__meta-item">
                           <MapPin size={14} />
@@ -448,7 +455,7 @@ export const LandingPage = () => {
                         </div>
                         <div className="lp-pos-card__meta-item">
                           <Clock size={14} />
-                          <span>{pos.duration || '3 months'}</span>
+                          <span>{pos.duration || '3 - 6 months'}</span>
                         </div>
                       </div>
                     </div>

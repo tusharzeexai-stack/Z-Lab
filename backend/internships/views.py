@@ -16,6 +16,107 @@ from users.emails import send_intern_welcome_email, send_conversion_email, send_
 from activity_logs.utils import log_activity
 
 
+SEED_POSITIONS = [
+    # Technical
+    {
+        "title": "AI/ML Engineering Intern",
+        "role": "aiml_engineer",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Work on cutting-edge AI and Machine Learning models. Model architecture development, training pipelines, data preprocessing, hyperparameter tuning, and deploying scalable inference endpoints.",
+        "requirements": "Python, PyTorch, Scikit-learn, Model Development, Training & Deployment",
+        "is_open": True,
+    },
+    {
+        "title": "Full-Stack Development Intern",
+        "role": "fullstack_dev",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Develop modern web applications. Build responsive UIs using React & TypeScript, and engineer scalable backend services using Node.js, FastAPI, and PostgreSQL.",
+        "requirements": "React, TypeScript, Node.js, FastAPI, REST APIs, PostgreSQL",
+        "is_open": True,
+    },
+    {
+        "title": "Backend Engineering Intern",
+        "role": "backend_engineer",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Design and optimize high-throughput backend services, REST APIs, database schemas, authentication systems, and scalable backend infrastructure.",
+        "requirements": "Python, FastAPI, Node.js, Databases, APIs, Authentication & Scalable Systems",
+        "is_open": True,
+    },
+    {
+        "title": "Computer Vision Intern",
+        "role": "computer_vision",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Develop and deploy computer vision pipelines for real-time video analytics, object detection, spatial tracking, and visual intelligence.",
+        "requirements": "OpenCV, PyTorch, TensorRT, Object Detection, Tracking & Video Analytics",
+        "is_open": True,
+    },
+    {
+        "title": "Cloud & DevOps Intern",
+        "role": "devops_cloud",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Automate cloud deployments, infrastructure provisioning, and container orchestration using modern DevOps toolchains.",
+        "requirements": "AWS/GCP, Docker, CI/CD, Terraform, Kubernetes & Cloud Deployment",
+        "is_open": True,
+    },
+    {
+        "title": "Data Science & Analytics Intern",
+        "role": "data_science",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Perform exploratory data analysis, statistical modeling, data visualization, and predictive machine learning on complex datasets.",
+        "requirements": "Python, Pandas, NumPy, SQL, Data Analysis, Visualization & ML",
+        "is_open": True,
+    },
+    # Non-Technical
+    {
+        "title": "Product Management Intern",
+        "role": "product_management",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Lead product research, feature specification, roadmap planning, user feedback loops, and Agile sprint execution.",
+        "requirements": "Product Research, Requirements, Roadmap Planning, Feature Prioritization & Agile",
+        "is_open": True,
+    },
+    {
+        "title": "UI/UX & Product Design Intern",
+        "role": "uiux_design",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Design intuitive user interfaces, wireframes, high-fidelity prototypes, and comprehensive design systems using Figma.",
+        "requirements": "Figma, User Research, Wireframing, Prototyping & Design Systems",
+        "is_open": True,
+    },
+    {
+        "title": "Business Development & Growth Intern",
+        "role": "business_dev",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Drive market research, B2B lead generation, client communication, strategic partnerships, and Go-To-Market expansion.",
+        "requirements": "Market Research, Lead Generation, Partnerships, Client Communication & GTM",
+        "is_open": True,
+    },
+    {
+        "title": "Social Media & Content Intern",
+        "role": "social_media_content",
+        "position_type": "internship",
+        "duration": "3 - 6 months",
+        "description": "Manage multi-channel social presence, create engaging multimedia content, write copy, run marketing campaigns, and analyze growth metrics.",
+        "requirements": "Social Media Management, Content Creation, Copywriting, Campaigns, Analytics & Brand Growth",
+        "is_open": True,
+    },
+]
+
+def auto_seed_positions():
+    if OpenPosition.objects.count() == 0:
+        for item in SEED_POSITIONS:
+            OpenPosition.objects.create(**item)
+
+
 # ── Open Positions ──────────────────────────────────────────────────────────────
 class OpenPositionListView(generics.ListCreateAPIView):
     """Public GET, Admin POST"""
@@ -27,6 +128,7 @@ class OpenPositionListView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
     def get_queryset(self):
+        auto_seed_positions()
         qs = OpenPosition.objects.all()
         open_only = self.request.query_params.get('open')
         if open_only == 'true':

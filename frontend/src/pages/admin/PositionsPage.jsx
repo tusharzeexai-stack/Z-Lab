@@ -7,32 +7,36 @@ import { safeList, internshipApi } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import { 
   Briefcase, CheckCircle2, ChevronRight, Edit2, Trash2, HelpCircle, 
-  Terminal, Code, Palette, Rocket, BarChart, FileText, Users, Clock, Globe, Plus, ToggleLeft, ToggleRight
+  Terminal, Code, Palette, Rocket, BarChart, FileText, Users, Clock, Globe, Plus, Target, Eye
 } from 'lucide-react'
 
 const ROLE_ICONS = {
-  aiml_intern: Terminal,
-  bde_intern: Briefcase,
-  dev_intern: Code,
-  design_intern: Palette,
-  marketing_intern: Rocket,
-  data_intern: BarChart,
-  content_intern: FileText,
-  hr_intern: Users,
+  aiml_engineer: Terminal,
+  fullstack_dev: Code,
+  backend_engineer: Terminal,
+  computer_vision: Eye,
+  devops_cloud: Globe,
+  data_science: BarChart,
+  product_management: Target,
+  uiux_design: Palette,
+  business_dev: Briefcase,
+  social_media_content: Rocket,
 }
 
-const CATEGORY_PRESETS = [
-  { value: 'dev_intern', label: 'Software Development' },
-  { value: 'aiml_intern', label: 'AI & Machine Learning' },
-  { value: 'design_intern', label: 'UI/UX Design' },
-  { value: 'marketing_intern', label: 'Digital Marketing' },
-  { value: 'bde_intern', label: 'Business Development' },
-  { value: 'data_intern', label: 'Data Analytics' },
-  { value: 'content_intern', label: 'Content Writing' },
-  { value: 'hr_intern', label: 'Human Resources' },
-  { value: 'full_stack_dev', label: 'Full Stack Development' },
-  { value: 'backend_dev', label: 'Backend Engineering' },
-  { value: 'frontend_dev', label: 'Frontend Engineering' },
+const TECH_ROLES = [
+  { value: 'aiml_engineer', label: 'AI/ML Engineering Intern' },
+  { value: 'fullstack_dev', label: 'Full-Stack Development Intern' },
+  { value: 'backend_engineer', label: 'Backend Engineering Intern' },
+  { value: 'computer_vision', label: 'Computer Vision Intern' },
+  { value: 'devops_cloud', label: 'Cloud & DevOps Intern' },
+  { value: 'data_science', label: 'Data Science & Analytics Intern' },
+]
+
+const NON_TECH_ROLES = [
+  { value: 'product_management', label: 'Product Management Intern' },
+  { value: 'uiux_design', label: 'UI/UX & Product Design Intern' },
+  { value: 'business_dev', label: 'Business Development & Growth Intern' },
+  { value: 'social_media_content', label: 'Social Media & Content Intern' },
 ]
 
 export const PositionsPage = () => {
@@ -44,9 +48,9 @@ export const PositionsPage = () => {
   const [form, setForm] = useState({
     id: null,
     title: '',
-    role: 'dev_intern',
+    role: 'aiml_engineer',
     position_type: 'internship',
-    duration: '3 months',
+    duration: '3 - 6 months',
     is_open: true,
     description: '',
     requirements: ''
@@ -68,9 +72,9 @@ export const PositionsPage = () => {
     setForm({
       id: null,
       title: '',
-      role: 'dev_intern',
+      role: 'aiml_engineer',
       position_type: 'internship',
-      duration: '3 months',
+      duration: '3 - 6 months',
       is_open: true,
       description: '',
       requirements: ''
@@ -82,9 +86,9 @@ export const PositionsPage = () => {
     setForm({
       id: pos.id,
       title: pos.title,
-      role: pos.role || 'dev_intern',
+      role: pos.role || 'aiml_engineer',
       position_type: pos.position_type || 'internship',
-      duration: pos.duration || '3 months',
+      duration: pos.duration || '3 - 6 months',
       is_open: pos.is_open,
       description: pos.description || '',
       requirements: pos.requirements || ''
@@ -121,7 +125,7 @@ export const PositionsPage = () => {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this job position? It will be removed from the landing page.')) return
+    if (!confirm('Are you sure you want to delete this position?')) return
     try {
       await internshipApi.deletePosition(id)
       toast.success('Position deleted successfully')
@@ -137,8 +141,12 @@ export const PositionsPage = () => {
       toast.success(`Position "${pos.title}" is now ${!pos.is_open ? 'Open & Visible' : 'Closed'}`)
       load()
     } catch {
-      toast.error('Failed to update position status')
+      toast.error('Failed to update status')
     }
+  }
+
+  const isTechRole = (roleKey) => {
+    return TECH_ROLES.some(r => r.value === roleKey) || ['dev', 'ai', 'cloud', 'data', 'vision', 'backend', 'fullstack'].some(k => (roleKey || '').toLowerCase().includes(k))
   }
 
   return (
@@ -162,9 +170,9 @@ export const PositionsPage = () => {
             <div style={{ width: 64, height: 64, background: 'var(--bg-raised)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--text-muted)' }}>
               <Briefcase size={32} />
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>No Job Openings Created</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>No Job Openings Configured</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: 14, maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.5 }}>
-              Create open positions so applicants can view and apply for internships or jobs directly from your public landing page.
+              Create open positions so visitors can view and apply for internships or jobs directly from your public landing page.
             </p>
             <button className="btn btn-primary" onClick={handleOpenCreate} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <Plus size={16} /> Create First Position
@@ -176,9 +184,9 @@ export const PositionsPage = () => {
               <thead>
                 <tr>
                   <th>Job Title & Category</th>
-                  <th>Type</th>
+                  <th>Domain</th>
                   <th>Duration</th>
-                  <th style={{ textAlign: 'center' }}>Live Landing Page</th>
+                  <th>Key Skills / Requirements</th>
                   <th style={{ textAlign: 'center' }}>Status</th>
                   <th style={{ textAlign: 'right', paddingRight: 24 }}>Actions</th>
                 </tr>
@@ -186,34 +194,33 @@ export const PositionsPage = () => {
               <tbody>
                 {positions.map(pos => {
                   const Icon = ROLE_ICONS[pos.role] || Briefcase
+                  const isTech = isTechRole(pos.role)
                   return (
                     <tr key={pos.id}>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-raised)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--blue)' }}>
+                          <div style={{ width: 40, height: 40, borderRadius: 10, background: isTech ? 'rgba(99, 102, 241, 0.1)' : 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isTech ? '#6366f1' : '#f59e0b' }}>
                             <Icon size={20} />
                           </div>
                           <div>
                             <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: 14 }}>{pos.title}</div>
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Category: {pos.role}</div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{pos.role}</div>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <span className={`badge ${pos.position_type === 'employee' ? 'badge-submitted' : 'badge-pending'}`} style={{ textTransform: 'capitalize' }}>
-                          {pos.position_type === 'employee' ? 'Full-Time Job' : 'Internship'}
+                        <span className={`badge ${isTech ? 'badge-submitted' : 'badge-pending'}`} style={{ fontWeight: 600 }}>
+                          {isTech ? '💻 Technical' : '📈 Non-Technical'}
                         </span>
                       </td>
                       <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <Clock size={14} className="text-secondary" />
-                          <span>{pos.duration || '3 months'}</span>
+                          <span>{pos.duration || '3 - 6 months'}</span>
                         </div>
                       </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <a href="/#positions" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-                          View on Site <Globe size={13} />
-                        </a>
+                      <td style={{ fontSize: 12, color: 'var(--text-secondary)', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={pos.requirements}>
+                        {pos.requirements || '—'}
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <button 
@@ -247,7 +254,7 @@ export const PositionsPage = () => {
       <Modal 
         open={modalOpen} 
         onClose={() => setModalOpen(false)} 
-        title={form.id ? 'Edit Job Opening' : 'Post New Job Opening'}
+        title={form.id ? 'Edit Internship Position' : 'Post New Internship Position'}
         size="lg"
       >
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -256,23 +263,38 @@ export const PositionsPage = () => {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Position Title *</label>
               <input 
                 className="input" 
-                placeholder="e.g. Full Stack Developer, AI/ML Intern" 
+                placeholder="e.g. AI/ML Engineering Intern" 
                 value={form.title} 
                 onChange={e => setForm({ ...form, title: e.target.value })} 
                 required 
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Category Domain *</label>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Category Role Preset *</label>
               <select 
                 className="input" 
                 value={form.role} 
-                onChange={e => setForm({ ...form, role: e.target.value })}
+                onChange={e => {
+                  const val = e.target.value
+                  const preset = [...TECH_ROLES, ...NON_TECH_ROLES].find(r => r.value === val)
+                  setForm({ 
+                    ...form, 
+                    role: val,
+                    title: form.title || (preset ? preset.label : '')
+                  })
+                }}
                 required
               >
-                {CATEGORY_PRESETS.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label} ({opt.value})</option>
-                ))}
+                <optgroup label="💻 TECHNICAL INTERNSHIPS">
+                  {TECH_ROLES.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="📈 NON-TECHNICAL INTERNSHIPS">
+                  {NON_TECH_ROLES.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </optgroup>
               </select>
             </div>
           </div>
@@ -293,7 +315,7 @@ export const PositionsPage = () => {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Duration</label>
               <input 
                 className="input" 
-                placeholder="e.g. 3 months, Permanent" 
+                placeholder="e.g. 3 - 6 months" 
                 value={form.duration} 
                 onChange={e => setForm({ ...form, duration: e.target.value })} 
               />
@@ -305,8 +327,8 @@ export const PositionsPage = () => {
                 value={form.is_open ? 'open' : 'closed'} 
                 onChange={e => setForm({ ...form, is_open: e.target.value === 'open' })}
               >
-                <option value="open">Open (Visible on Landing Page)</option>
-                <option value="closed">Closed (Hidden on Landing Page)</option>
+                <option value="open">Open (Accepting Applications)</option>
+                <option value="closed">Closed (Hidden on Site)</option>
               </select>
             </div>
           </div>
@@ -316,7 +338,7 @@ export const PositionsPage = () => {
             <textarea 
               className="input" 
               rows={4} 
-              placeholder="Describe the responsibilities, project scope, and learning outcomes..." 
+              placeholder="Describe core responsibilities, project scope, and team impact..." 
               value={form.description} 
               onChange={e => setForm({ ...form, description: e.target.value })} 
               required
@@ -324,11 +346,11 @@ export const PositionsPage = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Requirements (Optional)</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Required Skills / Tech Stack</label>
             <textarea 
               className="input" 
               rows={3} 
-              placeholder="e.g. Proficient in React, Node.js, Python. Strong communication skills..." 
+              placeholder="e.g. Python, PyTorch, Scikit-learn, React, FastAPI, SQL..." 
               value={form.requirements} 
               onChange={e => setForm({ ...form, requirements: e.target.value })} 
             />
@@ -337,7 +359,7 @@ export const PositionsPage = () => {
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 10 }}>
             <button type="button" className="btn btn-ghost" onClick={() => setModalOpen(false)}>Cancel</button>
             <button type="submit" className="btn btn-primary" disabled={acting}>
-              {acting ? 'Saving...' : form.id ? 'Save Changes' : 'Publish Job Opening'}
+              {acting ? 'Saving...' : form.id ? 'Save Changes' : 'Publish Position'}
             </button>
           </div>
         </form>
