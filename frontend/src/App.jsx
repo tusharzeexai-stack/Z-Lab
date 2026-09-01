@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 
@@ -59,37 +58,6 @@ const HomeRedirect = () => {
 }
 
 function App() {
-  useEffect(() => {
-    // Disable right click / context menu
-    const handleContextMenu = (e) => {
-      e.preventDefault()
-    }
-
-    // Disable Inspect Element keyboard shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U)
-    const handleKeyDown = (e) => {
-      if (e.keyCode === 123 || e.key === 'F12') {
-        e.preventDefault()
-        return false
-      }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) {
-        e.preventDefault()
-        return false
-      }
-      if ((e.ctrlKey || e.metaKey) && ['U', 'u', 'S', 's'].includes(e.key)) {
-        e.preventDefault()
-        return false
-      }
-    }
-
-    document.addEventListener('contextmenu', handleContextMenu)
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
-
   return (
     <AuthProvider>
       <BrowserRouter>
