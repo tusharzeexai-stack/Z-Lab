@@ -38,14 +38,13 @@ export const InternProfilePage = () => {
   const { user: currentUser, role } = useAuth()
   const [intern, setIntern] = useState(null)
   const [tasks, setTasks] = useState([])
-  const [projects, setProjects] = useState([])
   const [mentors, setMentors] = useState([])
   const [loading, setLoading] = useState(true)
   const [tasksLoading, setTasksLoading] = useState(false)
   const [acting, setActing] = useState(false)
 
   // Task Form
-  const [taskForm, setTaskForm] = useState({ title: '', description: '', deadline: '', project: '', team: '', round_number: 1 })
+  const [taskForm, setTaskForm] = useState({ title: '', description: '', deadline: '', team: '', round_number: 1 })
   const [emailForm, setEmailForm] = useState({ subject: '', body: '', template: 'custom' })
   const [taskFile, setTaskFile] = useState(null)
   
@@ -89,7 +88,6 @@ export const InternProfilePage = () => {
 
   useEffect(() => {
     loadIntern()
-    projectApi.list().then(r => setProjects(safeList(r.data)))
     
     const canPromote = ['super_admin', 'admin', 'mentor', 'team_member', 'team_head'].includes(role)
     if (canPromote) {
@@ -326,12 +324,6 @@ export const InternProfilePage = () => {
                                     <input className="input" type="datetime-local" value={taskForm.deadline} onChange={e => setTaskForm({...taskForm, deadline: e.target.value})} required style={{ flex: 1.5 }} />
                                     <select className="input" value={taskForm.round_number} onChange={e => setTaskForm({...taskForm, round_number: e.target.value})} style={{ flex: 1 }}>
                                         {ROUNDS.map(r => <option key={r} value={r}>Round {r}</option>)}
-                                    </select>
-                                </div>
-                                <div style={{ display: 'flex', gap: 10 }}>
-                                    <select className="input" value={taskForm.project} onChange={e => setTaskForm({...taskForm, project: e.target.value})} style={{ width: '100%' }}>
-                                        <option value="">Project (None)</option>
-                                        {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                     </select>
                                 </div>
                                 <FileUpload label="Task Attachment" onChange={setTaskFile} />
