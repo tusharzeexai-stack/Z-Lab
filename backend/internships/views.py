@@ -117,24 +117,28 @@ class ApplicationAcceptView(APIView):
 
         # 3. Create User account based on application app_type
         password = generate_password()
-        username = application.email.split('@')[0].lower().replace('.', '_')
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f'{base_username}{counter}'
-            counter += 1
-        
-        user = User.objects.create_user(
-            username=username,
-            email=application.email.lower(),
-            first_name=application.name.split()[0] if application.name else '',
-            last_name=' '.join(application.name.split()[1:]) if len(application.name.split()) > 1 else '',
-        )
-        user.set_password(password)
-        user.save()
-        
-        user_role = 'team_member' if application.app_type == 'employee' else 'intern'
-        UserProfile.objects.create(user=user, role=user_role, phone=application.phone, temp_password=password)
+        user = User.objects.filter(email=application.email.lower()).first()
+        if not user:
+            username = application.email.split('@')[0].lower().replace('.', '_')
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f'{base_username}{counter}'
+                counter += 1
+            
+            user = User.objects.create_user(
+                username=username,
+                email=application.email.lower(),
+                first_name=application.name.split()[0] if application.name else '',
+                last_name=' '.join(application.name.split()[1:]) if len(application.name.split()) > 1 else '',
+            )
+            user.set_password(password)
+            user.save()
+            
+            user_role = 'team_member' if application.app_type == 'employee' else 'intern'
+            UserProfile.objects.create(user=user, role=user_role, phone=application.phone, temp_password=password)
+        else:
+            username = user.username
 
         # 4. Create intern profile if internship
         intern_profile_id = None

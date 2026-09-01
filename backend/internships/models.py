@@ -68,7 +68,7 @@ class Application(models.Model):
     ]
 
     name = models.CharField(max_length=200)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     phone = models.CharField(max_length=20)
     app_type = models.CharField(max_length=20, choices=APP_TYPE_CHOICES, default='internship')
     role_applied_for = models.CharField(
