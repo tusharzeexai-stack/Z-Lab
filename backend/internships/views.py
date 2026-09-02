@@ -631,8 +631,12 @@ class MigrateToZHajiriiView(APIView):
         name = intern.full_name or "Intern"
         email = intern.application.email if intern.application else (intern.user.email if intern.user else "")
         phone = intern.application.phone if intern.application else ""
-        domain = intern.domain or "Online Intern"
-        username = email.split('@')[0].lower() if email else f"intern_{intern.id}"
+        if intern.user and intern.user.username:
+            username = intern.user.username
+        elif email:
+            username = email.split('@')[0].lower()
+        else:
+            username = f"intern_{intern.id}"
         emp_id = f"ZH-INT-{intern.id:04d}"
 
         target_url = request.data.get('target_url', 'http://43.204.218.180:3001')
